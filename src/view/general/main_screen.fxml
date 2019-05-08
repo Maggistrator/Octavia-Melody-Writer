@@ -13,10 +13,13 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.general.MainScreenController">
    <children>
-      <SplitPane dividerPositions="0.15" layoutY="19.0" prefHeight="577.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="23.0">
+      <SplitPane dividerPositions="0.2" layoutY="19.0" prefHeight="577.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="23.0">
          <items>
             <fx:include fx:id="navigation" source="navigation/navigation.fxml" />
-            <ScrollPane id="contentPane" fx:id="contentPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="575.0" prefViewportHeight="600.0" prefViewportWidth="561.0" prefWidth="697.0" />
+            <ScrollPane id="contentPane" fx:id="contentPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="575.0" prefViewportHeight="600.0" prefViewportWidth="561.0" prefWidth="697.0">
+               <content>
+                  <fx:include source="../functions/autor_mode.fxml" />
+               </content></ScrollPane>
          </items>
       </SplitPane>
       <MenuBar layoutY="-1.0" prefHeight="25.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
@@ -45,7 +48,7 @@
       </MenuBar>
       <Pane layoutX="862.0" layoutY="24.0" prefHeight="575.0" prefWidth="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">
          <children>
-            <fx:include source="toolbar/toolbar.fxml" />
+            <fx:include fx:id="toolbar" source="toolbar/toolbar.fxml" />
          </children>
       </Pane>
    </children>
