@@ -1,5 +1,4 @@
 package controller;
-
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -15,13 +14,13 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-		try {
-	    	Parent root = FXMLLoader.load(getClass().getResource("../view/main/main_screen.fxml"));    	
-	    	Scene scene = new Scene(root);
-	    	primaryStage.setScene(scene);
-	        primaryStage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("../view/general/main_screen.fxml"));    	
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (IOException e) {
+            System.out.println(String.format("Сценарий построения интерфейса повреждён, или отсутствует. Сообщение ошибки:\n%s", e.getMessage()));
+        }
     }
 }
