@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="365.0" styleClass="pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.support.NewProjectDialogContoroller">
+    <children>
+        <TextField fx:id="nameField" layoutX="29.0" layoutY="89.0" prefHeight="25.0" prefWidth="300.0" promptText="Моя книга будет называться..." AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="85.0" />
+        <TextField fx:id="pathField" layoutX="29.0" layoutY="206.0" prefHeight="25.0" prefWidth="230.0" promptText="&lt;по умолчанию&gt;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="205.0" />
+        <Label layoutX="94.0" layoutY="23.0" text="Создать проект!" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="20.0">
+            <font>
+                <Font name="Arial" size="24.0" />
+            </font>
+        </Label>
+        <Label layoutX="29.0" layoutY="65.0" text="Название произведения:" textFill="#323232" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="65.0" />
+        <Label layoutX="29.0" layoutY="183.0" text="Расположение проекта:" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="185.0" />
+        <Button fx:id="chooseProjectPathButton" layoutX="275.0" layoutY="205.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Выбрать" AnchorPane.leftAnchor="265.0" />
+        <Label layoutX="29.0" layoutY="240.0" text="Фандом:" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="245.0" />
+        <ComboBox fx:id="fandomBox" editable="true" layoutX="29.0" layoutY="263.0" prefHeight="25.0" prefWidth="300.0" promptText="Ориджинал" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="265.0" />
+        <Label layoutX="29.0" layoutY="121.0" text="Тип:" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="125.0" />
+        <ComboBox fx:id="projectTypeBox" layoutX="29.0" layoutY="145.0" prefWidth="150.0" promptText="Авторство" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="145.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Авторство" />
+                    <String fx:value="Перевод" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+      <TextArea fx:id="summoryTextArea" layoutX="31.0" layoutY="349.0" prefHeight="80.0" prefWidth="300.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="345.0" />
+      <Label layoutX="31.0" layoutY="305.0" prefHeight="37.0" prefWidth="300.0" text="Опишите в двух словах, о чем будет ваше произведение:" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="305.0" />
+      <Button fx:id="acceptButton" defaultButton="true" layoutX="103.0" layoutY="464.0" mnemonicParsing="false" onAction="#accept" prefHeight="29.0" prefWidth="76.0" styleClass="apply" text="Создать" AnchorPane.topAnchor="435.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+      <Button fx:id="declineButton" cancelButton="true" layoutX="191.0" layoutY="464.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="76.0" styleClass="close" text="Отменить" AnchorPane.topAnchor="435.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+    </children>
+</AnchorPane>
