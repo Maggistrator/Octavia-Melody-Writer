@@ -6,11 +6,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="579.0" prefWidth="186.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="rootNavigationPane" prefHeight="579.0" prefWidth="186.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.general.navigation.NavigationController">
    <children>
       <AnchorPane layoutY="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
          <children>
-            <Label alignment="CENTER" prefHeight="35.0" prefWidth="170.0" stylesheets="@../mainstyle.css" text="Проект" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Label fx:id="header" alignment="CENTER" prefHeight="35.0" prefWidth="170.0" stylesheets="@../mainstyle.css" text="Проект" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font name="Tahoma" size="18.0" />
                </font>
@@ -19,9 +19,9 @@
             <Label alignment="CENTER" layoutX="7.0" layoutY="9.0" prefHeight="32.0" prefWidth="20.0" text="&lt;" textAlignment="CENTER" textOverrun="CLIP" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
-      <Separator layoutY="484.0" prefHeight="3.0" prefWidth="170.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Label layoutX="127.0" layoutY="556.0" text="Скрыть" textFill="#909090" underline="true" AnchorPane.bottomAnchor="2.0" AnchorPane.rightAnchor="5.0" />
-      <TextArea disable="true" editable="false" prefHeight="63.0" prefWidth="153.0" wrapText="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
-      <VBox layoutX="14.0" layoutY="34.0" prefHeight="444.0" prefWidth="147.0" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0" />
+      <Separator fx:id="separator" layoutY="484.0" prefHeight="3.0" prefWidth="170.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Label fx:id="hideButton" layoutX="127.0" layoutY="556.0" text="Скрыть" textFill="#909090" underline="true" AnchorPane.bottomAnchor="2.0" AnchorPane.rightAnchor="5.0" />
+      <TextArea fx:id="hintArea" disable="true" editable="false" prefHeight="63.0" prefWidth="153.0" wrapText="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+      <VBox fx:id="navigationNodesPane" layoutX="14.0" layoutY="34.0" prefHeight="444.0" prefWidth="147.0" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0" />
    </children>
 </AnchorPane>
