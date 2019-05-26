@@ -1,6 +1,6 @@
 package model.project;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class Project {
 
-    enum ProjectType {
+    public enum ProjectType {
         Autorship, Translation;
     }
 
@@ -20,16 +20,26 @@ public class Project {
     public ArrayList<Arch> content = new ArrayList<>();
     
     /**Название произведения*/
-    String name;
+    public String name;
     /**Фандом, к которому относится произведение*/
-    String fandom;
+    public String fandom;
     /**Тип проекта - авторство или перевод*/
-    ProjectType type;
+    public ProjectType type;
     /**Краткое описание проекта*/
-    String summory;
+    public String summory;
     
     /**Путь к корневой папке проекта, с которой производится синхронизация*/
-    Path source;
+    public File source;
+
+    /**
+     *
+     * @param name имя проекта, его директории и некоторых метаданных
+     * @param path папка, в которой содержатся файлы проекта - своего рода workspace
+     */
+    public Project(String name, File path) {
+        this.name = name; 
+        this.source = path;
+    }
     
     /**
      * Позволяет сохранить данный проект
@@ -45,15 +55,6 @@ public class Project {
      */
     public static Project load(String path){
         return null;
-    }
-    
-    /**
-     * Позволяет создать проект по выбранному пути
-     * @param path путь, который следует использовать. 
-     * Недостающие директории будут созданы автоматически
-     */
-    public static void create(String path){
-        
     }
     
     /**

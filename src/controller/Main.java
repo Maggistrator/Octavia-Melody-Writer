@@ -19,11 +19,11 @@ public class Main extends Application {
         try {
             ProjectManager manager = new ProjectManager();
             
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/general/main_screen.fxml")); 
             MainScreenController controller = new MainScreenController();
             loader.setController(controller);
             controller.setProjectManager(manager);
-            Parent root = loader.load(getClass().getResource("../view/general/main_screen.fxml")); 
+            Parent root = loader.load();
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Octavia Melody Writer");

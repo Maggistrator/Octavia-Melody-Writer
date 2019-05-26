@@ -2,8 +2,7 @@ package view.general;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,8 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
@@ -22,6 +19,7 @@ import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
 import model.project.observer.events.ProjectEvent;
 import view.general.navigation.NavigationController;
+import view.support.createproject.CreateProjectDialogController;
 
 /**
  * Этот контроллер управляет основным окном, в которое встраиваются остальные.
@@ -67,19 +65,27 @@ public class MainScreenController implements ProjectListener{
     
     @FXML
     void initialize() {
+        //--Загрузка панели навигации--//
         try {
-            FXMLLoader loader = new FXMLLoader();
-            NavigationController navController = new NavigationController();
-            loader.setController(navController);
-            navController.setProjectManager(manager);
-            Parent root = loader.load(getClass().getResource("navigation/navigation.fxml"));
+            //инициализируем загузчик
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("navigation/navigation.fxml"));
+            //создаём и устанавливаем контроллер
+            NavigationController controller = new NavigationController();
+            loader.setController(controller);
+            //задаём Наблюдаемого
+            controller.setProjectManager(manager);
+            Parent root = loader.load();
             this.splitPane.getItems().add(0, root);
             splitPane.setDividerPosition(0, 0.2);
+            //подписываем нового наблюдателя
+            manager.subscribe(controller);
         } catch (IOException ex) {
             System.err.println("Не удалось загрузить панель навигации");
             ex.printStackTrace();
         }
         
+        
+        //--Загрузка панели контента--//
         try {
             FXMLLoader loader = new FXMLLoader();
             Parent root = loader.load(getClass().getResource("../functions/autor_mode.fxml"));
@@ -88,18 +94,35 @@ public class MainScreenController implements ProjectListener{
             System.err.println("Не удалось загрузить панель контента");
             ex.printStackTrace();
         }
+        
+        //создаём обработчики событий для главного окна
+        createProjectMenuItem.addEventHandler(ActionEvent.ACTION, this::createProject);
+        exitMenuItem.addEventHandler(ActionEvent.ACTION, this::exitApplication);
+        
+        //Main panel подписывает себя на события проекта
+        manager.subscribe(this);
     }
     
-    public void createProject() {
+    /**
+     * Функция вызова окна по созданию нового проекта
+     * @param e не очень-то нужное событие, но оно необходимо по контракту обработчика
+     */
+    public void createProject(ActionEvent e) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            Parent root = fxmlLoader.load(getClass().getResource("../support/create_project_window.fxml"));
-            
+            //загрузка рутпанели-наблюдателя
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/createproject/create_project_window.fxml"));
+            CreateProjectDialogController controller = new CreateProjectDialogController();
+            loader.setController(controller);
+            controller.setProjectManager(manager);
+            Parent root = loader.load();
+            //----------------------------------
+
+            //настройки модального окна
             Stage stage = new Stage();
             stage.setTitle("Создать проект");
             stage.setScene(new Scene(root));
             stage.setResizable(false);
-            stage.initModality(Modality.APPLICATION_MODAL); 
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -119,14 +142,14 @@ public class MainScreenController implements ProjectListener{
 
     @Override
     public void dispatch(ProjectEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     public void setProjectManager(ProjectManager manager){
         this.manager = manager;
+        
     }
     
-    public void exitApplication() {
+    public void exitApplication(ActionEvent e) {
         System.exit(0);
     }
 }

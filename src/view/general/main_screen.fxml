@@ -11,7 +11,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #FFF0D0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.general.MainScreenController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #FFF0D0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <SplitPane fx:id="splitPane" layoutY="19.0" prefHeight="577.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="23.0">
          <items>
@@ -22,10 +22,10 @@
         <menus>
           <Menu mnemonicParsing="false" text="Проект">
             <items>
-              <MenuItem fx:id="createProjectMenuItem" mnemonicParsing="false" onAction="#createProject" text="Новый проект" />
+              <MenuItem fx:id="createProjectMenuItem" mnemonicParsing="false" text="Новый проект" />
                   <MenuItem fx:id="saveProjectMenuItem" mnemonicParsing="false" text="Сохранить всё" />
-                  <MenuItem fx:id="loadProjectMenuItem" mnemonicParsing="false" onAction="#loadProject" text="Загрузить проект" />
-                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#exitApplication" text="Выйти" />
+                  <MenuItem fx:id="loadProjectMenuItem" mnemonicParsing="false" text="Загрузить проект" />
+                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Выйти" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Глава">

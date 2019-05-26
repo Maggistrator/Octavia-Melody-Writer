@@ -2,6 +2,7 @@ package model.project.observer;
 
 import java.util.ArrayList;
 import model.project.Project;
+import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 
 /**
@@ -24,8 +25,10 @@ public class ProjectManager implements ObservableProject {
         //загрузить проект в этот ProjectManager, и уведомить слушателей 
     }
 
-    public void createProject(String path){
-        //создать проект в этом ProjectManager'e, и уведомить слушателей
+    public void createProject(Project project){
+        this.project = project;
+        project.save();
+        notify(new ProjectCreatedEvent(project));
     }
     
     public void deleteProject(){

@@ -1,14 +1,15 @@
 package view.general.navigation;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import model.project.Project;
 import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
+import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 
 /**
@@ -37,18 +38,25 @@ public class NavigationController implements ProjectListener{
     private AnchorPane rootNavigationPane;
 
     ProjectManager manager;
+    Project project;
     
     @FXML
     void initialize() {}
 
     @Override
     public void dispatch(ProjectEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(e instanceof ProjectCreatedEvent){
+            ProjectCreatedEvent event = (ProjectCreatedEvent)e;
+            this.project = event.project;
+            navigationNodesPane.getChildren().clear();
+            header.setText(project.name);
+        } 
+            
     }
     
     public void setProjectManager(ProjectManager manager){
         this.manager = manager;
-        System.out.println("Hello from navigation:setProjectManager()");
+        System.out.println("view.general.navigation.NavigationController.setProjectManager()");
     }
     
 }
