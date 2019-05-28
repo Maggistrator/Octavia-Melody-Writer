@@ -1,7 +1,11 @@
 package model.project;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  * Класс произведения.
@@ -45,7 +49,23 @@ public class Project {
      * Позволяет сохранить данный проект
      */
     public void save(){
-        
+        File projectHome = new File(source.getAbsolutePath() + "/" + name);
+        if (projectHome.mkdir()) createMetadataAndDirectories();
+        else{
+            //что-то сохраняем..
+        }
+    }
+    
+    private void createMetadataAndDirectories(){
+            File projectHome = new File(source.getAbsolutePath()+"/"+name);
+        File projectProperties = new File(source.getAbsolutePath()+"/"+name+"/"+name+".xml");
+        if (projectHome.mkdir()) {
+            try {
+                projectProperties.createNewFile();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Невозможно создать файл проекта! \nПричина:"+ex);
+            }
+        }
     }
     
     /**

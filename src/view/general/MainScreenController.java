@@ -61,24 +61,15 @@ public class MainScreenController implements ProjectListener{
     @FXML
     ScrollPane contentPane;
     
-    ProjectManager manager;
+    ProjectManager manager = ProjectManager.getInstance();
     
     @FXML
     void initialize() {
         //--Загрузка панели навигации--//
         try {
-            //инициализируем загузчик
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("navigation/navigation.fxml"));
-            //создаём и устанавливаем контроллер
-            NavigationController controller = new NavigationController();
-            loader.setController(controller);
-            //задаём Наблюдаемого
-            controller.setProjectManager(manager);
-            Parent root = loader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("navigation/navigation.fxml"));
             this.splitPane.getItems().add(0, root);
             splitPane.setDividerPosition(0, 0.2);
-            //подписываем нового наблюдателя
-            manager.subscribe(controller);
         } catch (IOException ex) {
             System.err.println("Не удалось загрузить панель навигации");
             ex.printStackTrace();
@@ -110,13 +101,8 @@ public class MainScreenController implements ProjectListener{
     public void createProject(ActionEvent e) {
         try {
             //загрузка рутпанели-наблюдателя
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/createproject/create_project_window.fxml"));
-            CreateProjectDialogController controller = new CreateProjectDialogController();
-            loader.setController(controller);
-            controller.setProjectManager(manager);
-            Parent root = loader.load();
-            //----------------------------------
-
+            Parent root = FXMLLoader.load(getClass().getResource("../support/createproject/create_project_window.fxml"));
+           
             //настройки модального окна
             Stage stage = new Stage();
             stage.setTitle("Создать проект");
@@ -142,11 +128,6 @@ public class MainScreenController implements ProjectListener{
 
     @Override
     public void dispatch(ProjectEvent e) {
-    }
-    
-    public void setProjectManager(ProjectManager manager){
-        this.manager = manager;
-        
     }
     
     public void exitApplication(ActionEvent e) {

@@ -43,7 +43,7 @@ public class CreateProjectDialogController {
     @FXML
     private Button acceptButton;
     
-    private ProjectManager manager;
+    private ProjectManager manager = ProjectManager.getInstance();
     
     @FXML
     private void accept(ActionEvent event) {
@@ -52,7 +52,7 @@ public class CreateProjectDialogController {
            //получаем пачку данных из них, и приводим их в порядок
            String name = nameField.getText();
            String path = pathField.getText();
-           String fandom = (fandom = fandomBox.getValue().toString()).isEmpty() ? "Ориджинал" : fandom;
+           String fandom = (fandom = fandomBox.getValue()+"").isEmpty() ? "Ориджинал" : fandom;
            String summory = summoryTextArea.getText();
            
            Project.ProjectType type = Project.ProjectType.Autorship;
@@ -72,7 +72,6 @@ public class CreateProjectDialogController {
            project.summory = summory;
            project.type = type;
            
-           System.out.println("Manager is:"+manager);
            //запихиваем в ProjectManager - об уведомлении заинтересованных лиц он сам позаботится
            manager.createProject(project);
            close();
@@ -148,10 +147,6 @@ public class CreateProjectDialogController {
         }
     }
     
-    public void setProjectManager(ProjectManager manager){
-        this.manager = manager;
-    }
-        
     @FXML
     private void close() {
         Stage stage = (Stage) acceptButton.getScene().getWindow();

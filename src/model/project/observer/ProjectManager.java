@@ -17,6 +17,14 @@ public class ProjectManager implements ObservableProject {
     private final ArrayList<ProjectListener> listeners = new ArrayList<>();
     private Project project;
     
+    private static ProjectManager instance = new ProjectManager();
+
+    private ProjectManager() {}
+    
+    public static ProjectManager getInstance(){
+        return instance;
+    }
+    
     public void saveProject(){
         //если проект не null, то сохранить его, и уведомить слушателей 
     }

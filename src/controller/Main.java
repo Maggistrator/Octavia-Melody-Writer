@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import model.project.observer.ProjectManager;
 import view.general.MainScreenController;
  
 public class Main extends Application {
@@ -17,12 +16,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            ProjectManager manager = new ProjectManager();
-            
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/general/main_screen.fxml")); 
             MainScreenController controller = new MainScreenController();
             loader.setController(controller);
-            controller.setProjectManager(manager);
             Parent root = loader.load();
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);

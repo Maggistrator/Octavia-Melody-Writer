@@ -37,11 +37,13 @@ public class NavigationController implements ProjectListener{
     @FXML
     private AnchorPane rootNavigationPane;
 
-    ProjectManager manager;
+    ProjectManager manager = ProjectManager.getInstance();
     Project project;
     
     @FXML
-    void initialize() {}
+    void initialize() {
+        manager.subscribe(this);
+    }
 
     @Override
     public void dispatch(ProjectEvent e) {
@@ -53,10 +55,4 @@ public class NavigationController implements ProjectListener{
         } 
             
     }
-    
-    public void setProjectManager(ProjectManager manager){
-        this.manager = manager;
-        System.out.println("view.general.navigation.NavigationController.setProjectManager()");
-    }
-    
 }
