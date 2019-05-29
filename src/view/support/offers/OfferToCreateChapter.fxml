@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="CENTER" layoutX="104.0" layoutY="37.0" prefHeight="326.0" prefWidth="392.0" AnchorPane.bottomAnchor="37.0" AnchorPane.leftAnchor="104.0" AnchorPane.rightAnchor="104.0" AnchorPane.topAnchor="37.0">
+         <children>
+            <Label fx:id="projectNameLabel" alignment="TOP_CENTER" disable="true" prefHeight="80.0" prefWidth="350.0" text="Name" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Button fx:id="createChapterButton" alignment="CENTER" mnemonicParsing="false" text="Создать главу" textAlignment="CENTER" />
+            <Label disable="true" prefHeight="76.0" prefWidth="120.0" text="Нажмите на кнопку, чтобы создать главу" textAlignment="CENTER" wrapText="true">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

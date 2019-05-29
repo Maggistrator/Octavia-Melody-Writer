@@ -2,6 +2,8 @@ package view.general;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,9 +19,11 @@ import javafx.stage.Stage;
 import model.project.Project;
 import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
+import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 import view.general.navigation.NavigationController;
 import view.support.createproject.CreateProjectDialogController;
+import view.support.offers.OfferToCreateChapterController;
 
 /**
  * Этот контроллер управляет основным окном, в которое встраиваются остальные.
@@ -79,7 +83,8 @@ public class MainScreenController implements ProjectListener{
         //--Загрузка панели контента--//
         try {
             FXMLLoader loader = new FXMLLoader();
-            Parent root = loader.load(getClass().getResource("../functions/autor_mode.fxml"));
+            //Parent root = loader.load(getClass().getResource("../functions/autor_mode.fxml"));
+            Parent root = loader.load(getClass().getResource("../support/offers/OfferToCreateProject.fxml"));
             this.contentPane.setContent(root);
         } catch (IOException ex) {
             System.err.println("Не удалось загрузить панель контента");
@@ -128,6 +133,17 @@ public class MainScreenController implements ProjectListener{
 
     @Override
     public void dispatch(ProjectEvent e) {
+        if(e instanceof ProjectCreatedEvent){
+            try {
+                
+          FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/offers/OfferToCreateChapter.fxml"));
+          loader.setController(new OfferToCreateChapterController());
+                Parent offerToCreateChapterPanel = loader.load();
+                contentPane.setContent(offerToCreateChapterPanel);
+            } catch (IOException ex) {
+                Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     public void exitApplication(ActionEvent e) {

@@ -1,6 +1,9 @@
 package view.support.createproject;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -10,8 +13,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javax.swing.JOptionPane;
+import javax.xml.transform.TransformerException;
 import model.project.Project;
 import model.project.observer.ProjectManager;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 /**
  *
@@ -52,7 +58,8 @@ public class CreateProjectDialogController {
            //получаем пачку данных из них, и приводим их в порядок
            String name = nameField.getText();
            String path = pathField.getText();
-           String fandom = (fandom = fandomBox.getValue()+"").isEmpty() ? "Ориджинал" : fandom;
+           String fandom = "Ориджинал";
+           fandom = fandomBox.getValue() == null || fandomBox.getValue().toString().isEmpty() ? "Ориджинал" : fandom;
            String summory = summoryTextArea.getText();
            
            Project.ProjectType type = Project.ProjectType.Autorship;
@@ -69,12 +76,20 @@ public class CreateProjectDialogController {
            //создаём объект Project
            Project project = new Project(name, new File(path));
            project.fandom = fandom;
-           project.summory = summory;
+           project.description = summory;
            project.type = type;
            
-           //запихиваем в ProjectManager - об уведомлении заинтересованных лиц он сам позаботится
-           manager.createProject(project);
-           close();
+           try {
+               //запихиваем в ProjectManager - об уведомлении заинтересованных лиц он сам позаботится
+               manager.createProject(project);
+               close();
+           } catch (IOException ex) {
+               Logger.getLogger(CreateProjectDialogController.class.getName()).log(Level.SEVERE, null, ex);
+               //TODO: заменить на запись в служебный журнал ошибок в папке service
+               JOptionPane.showMessageDialog(null, "Ошибка создания служебного файла! Сообщение: "+ex.getMessage());
+           } catch (TransformerException ex) {
+               Logger.getLogger(CreateProjectDialogController.class.getName()).log(Level.SEVERE, null, ex);
+           }
        }
     }
     
@@ -106,7 +121,7 @@ public class CreateProjectDialogController {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Выберите расположение проекта!");
         File path = chooser.showDialog((Stage) acceptButton.getScene().getWindow()); //получаем файл
-        pathField.setText(path.getAbsolutePath()); // запихиваем его в поле 
+        if(path != null) pathField.setText(path.getAbsolutePath()); // запихиваем его в поле 
     }
        
     /**валидация пути к проекту*/
