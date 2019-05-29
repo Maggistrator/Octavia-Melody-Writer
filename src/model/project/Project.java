@@ -5,7 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Класс произведения.
@@ -30,7 +40,7 @@ public class Project {
     /**Тип проекта - авторство или перевод*/
     public ProjectType type;
     /**Краткое описание проекта*/
-    public String summory;
+    public String description;
     
     /**Путь к корневой папке проекта, с которой производится синхронизация*/
     public File source;
@@ -46,25 +56,66 @@ public class Project {
     }
     
     /**
-     * Позволяет сохранить данный проект
+     * Позволяет сохранить проект, если он существует, или создать, если нет
+     * @throws java.io.IOException на случай файловых ошибок - например - недостатка прав на запись
+     * @throws javax.xml.transform.TransformerException ошибка записи в xml
      */
-    public void save(){
+    public void save() throws IOException, TransformerException {
+        //-------------Создание проекта, если он еще не существует----------//
         File projectHome = new File(source.getAbsolutePath() + "/" + name);
-        if (projectHome.mkdir()) createMetadataAndDirectories();
-        else{
-            //что-то сохраняем..
-        }
-    }
-    
-    private void createMetadataAndDirectories(){
-            File projectHome = new File(source.getAbsolutePath()+"/"+name);
-        File projectProperties = new File(source.getAbsolutePath()+"/"+name+"/"+name+".xml");
-        if (projectHome.mkdir()) {
+        if (!projectHome.exists()) {
             try {
+                //создаем новую папку для этого проекта
+                projectHome.mkdir();
+                
+                //project.xml
+                File projectProperties = new File(projectHome.getAbsolutePath() + "/project.xml");
                 projectProperties.createNewFile();
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "Невозможно создать файл проекта! \nПричина:"+ex);
+                
+                //Записываем в него начальные параметры
+                DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+                Document document = documentBuilder.newDocument();
+                
+                Element root = document.createElement("book");
+                document.appendChild(root);
+                
+                Element nameTag = document.createElement("name");
+                nameTag.appendChild(document.createTextNode(name));
+                root.appendChild(nameTag);
+                
+                Element fandomTag = document.createElement("fandom");
+                fandomTag.appendChild(document.createTextNode(fandom));
+                root.appendChild(fandomTag);
+                
+                Element typeTag = document.createElement("type");
+                typeTag.appendChild(document.createTextNode(type.toString()));
+                root.appendChild(typeTag);
+                
+                Element descriptionTag = document.createElement("description");
+                descriptionTag.appendChild(document.createTextNode(description));
+                root.appendChild(descriptionTag);
+                
+                // записываем результаты
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                DOMSource domSource = new DOMSource(document);
+                StreamResult streamResult = new StreamResult(projectProperties);        
+                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                
+                // If you use
+                // StreamResult result = new StreamResult(System.out);
+                // the output will be pushed to the standard output ...
+                // You can use that for debugging
+
+                transformer.transform(domSource, streamResult);
+            } catch (ParserConfigurationException ex) {
+                Logger.getLogger(Project.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        //------------Сохранение, если проект существует-----------------//
+        else{
         }
     }
     

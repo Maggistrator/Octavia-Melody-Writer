@@ -1,6 +1,8 @@
 package model.project.observer;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import javax.xml.transform.TransformerException;
 import model.project.Project;
 import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
@@ -33,7 +35,11 @@ public class ProjectManager implements ObservableProject {
         //загрузить проект в этот ProjectManager, и уведомить слушателей 
     }
 
-    public void createProject(Project project){
+    /**
+     * Инкапсулирует в себе переданный проект, сохранет его и оповещает об этом слушателей
+     * @param project новосозданный проект (должен быть создан извне)
+     */
+    public void createProject(Project project) throws IOException, TransformerException{
         this.project = project;
         project.save();
         notify(new ProjectCreatedEvent(project));
@@ -62,6 +68,10 @@ public class ProjectManager implements ObservableProject {
     
     public void setProject(Project project){
         this.project = project; 
+    }
+
+    public Project getProject(){
+        return project;
     }
 
 }
