@@ -2,7 +2,12 @@ package model.project;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -14,8 +19,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import model.project.exceptions.ProjectLoadException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Класс произведения.
@@ -24,7 +31,7 @@ import org.w3c.dom.Element;
  * 
  * @author Сова
  */
-public class Project {
+public class Project implements ProjectLevel{
 
     public enum ProjectType {
         Autorship, Translation;
@@ -32,6 +39,12 @@ public class Project {
 
     /**Cписок арок, состоящих из глав. Можно использовать как тома.*/
     public ArrayList<Arch> content = new ArrayList<>();
+
+    /**
+     * Арка по-умолчанию.
+     * <br>Файлы, лежащие в ней - de-facto лежат в корне проекта
+     */
+    public Arch root;
     
     /**Название произведения*/
     public String name;
@@ -123,11 +136,84 @@ public class Project {
      * Позволяет загрузить проект по выбранному пути
      * @param path путь, который следует использовать
      * @return загруженный проект, или null, если произошла ошибка загрузки
+     * @throws model.project.exceptions.ProjectLoadException исключение, сигнализирующее о том, что файл конфигурации в выбранной директории не найден
      */
-    public static Project load(String path){
-        return null;
+    public static Project load(String path) throws ProjectLoadException {
+        File projectConfig = new File(path + "/project.xml");
+        if (projectConfig.exists()) {
+            try {
+                Document document = null;
+
+                //подготовка к генерации объекта при помощи фабрики
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                //генерируем document из XML
+                document = dBuilder.parse(projectConfig);
+
+
+                //парсинг имени проекта
+                String name = document.getElementsByTagName("name").item(0).getTextContent();
+                //парсинг описания
+                String description = document.getElementsByTagName("description").item(0).getTextContent();
+                //парсинг фандома
+                String fandom = document.getElementsByTagName("fandom").item(0).getTextContent();
+                //парсинг типа проекта
+                String type = document.getElementsByTagName("type").item(0).getTextContent();
+                
+                //вводим ключевые поля проекта
+                Project project = new Project(name, projectConfig);
+                project.description = description;
+                project.fandom = fandom;
+                project.type = type.equals("Autorship") ? ProjectType.Autorship : ProjectType.Translation;
+                
+                //обрабатываем рабочую директорию проекта
+                Arch rootArch = new Arch(projectConfig.getParentFile());
+                project.root = rootArch;//добавляем место для файлов без главы или тома
+                Stack<Arch> arches = new Stack<>();//создаём стэк арок
+                arches.push(rootArch);
+                //проходимся по файловой системе проекта
+                Files.walk(Paths.get(path)).forEach((arg)->{
+                    walkThrowProjectFiles(arg, arches, rootArch);
+                });
+                arches.remove(rootArch);
+                //перепиливаем стэк в список
+                project.content.addAll(arches);
+                return project;
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                e.printStackTrace();
+                throw new ProjectLoadException(ProjectLoadException.Cause.PARSING);
+            }
+        } else {
+            throw new ProjectLoadException(ProjectLoadException.Cause.LOCATING);
+        }
     }
-    
+
+    private static void walkThrowProjectFiles(Path path, Stack<Arch> arches, Arch rootArch) {
+        //каст б-г мерзкого Path к православному File
+        File file = path.toFile();
+        
+        //если натыкаемся на папку - делаем её Аркой(Томом)
+        if (file.isDirectory()) {
+            //избавляемся от рута 
+            if(!arches.peek().equals(rootArch))
+                arches.push(new Arch(file));
+        }
+        
+        //натыкаемся на файл - проверяем, кто является его большим папочкой
+        else {
+            File parentDirectory = file.getParentFile();
+            Arch lastArch = arches.pop();
+            //если родительской папкой файла de-facto является папка последней арки, то добавляем его в неё
+            if (parentDirectory.getAbsolutePath().equals(lastArch.source.getAbsolutePath())) {
+                lastArch.addChapter(new Chapter(file));
+                arches.push(lastArch);
+            } else//в противном случае....
+                //....рекурсивный вызов той же функции, но уже с предыдущим элементом стэка
+                walkThrowProjectFiles(path, arches, rootArch);
+                //ограничения на рекурсию не требуются, так как в выборку никогда не попадёт файл за пределами папки проекта
+        }
+    }
+
     /**
      * Удаляет текущий проект из файловой системы
      */

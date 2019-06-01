@@ -16,13 +16,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javax.swing.JOptionPane;
 import model.project.Project;
+import model.project.exceptions.ProjectLoadException;
 import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
 import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
-import view.general.navigation.NavigationController;
-import view.support.createproject.CreateProjectDialogController;
+import model.project.observer.events.ProjectLoadedEvent;
 import view.support.offers.OfferToCreateChapterController;
 
 /**
@@ -93,6 +94,7 @@ public class MainScreenController implements ProjectListener{
         
         //создаём обработчики событий для главного окна
         createProjectMenuItem.addEventHandler(ActionEvent.ACTION, this::createProject);
+        loadProjectMenuItem.addEventHandler(ActionEvent.ACTION, this::loadProject);
         exitMenuItem.addEventHandler(ActionEvent.ACTION, this::exitApplication);
         
         //Main panel подписывает себя на события проекта
@@ -120,24 +122,34 @@ public class MainScreenController implements ProjectListener{
         }
     }
 
-    public void loadProject() {
+    public void loadProject(ActionEvent e) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select path to your project");
         directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
-        File dir = directoryChooser.showDialog(null);
+        File dir = directoryChooser.showDialog(contentPane.getScene().getWindow());
         if (dir != null) {
-            Project project = Project.load(dir.getAbsolutePath());
+            try {
+                manager.loadProject(dir.getAbsolutePath());
+            } catch (ProjectLoadException ex) {
+                if(ex.type == ProjectLoadException.Cause.PARSING){
+                    //TODO: показать предложение восстановить проект, если он повреждён
+                    JOptionPane.showMessageDialog(null, "При чтении файлов проекта произошла ошибка");
+                }
+                if(ex.type == ProjectLoadException.Cause.LOCATING){
+                    //TODO: показать предложение создать новый проект в этой директории
+                    JOptionPane.showMessageDialog(null, "Похоже, эта папка не является проектом Octavia Melody Writer");
+                }
+            }
         }
     }
 
     @Override
     public void dispatch(ProjectEvent e) {
-        if(e instanceof ProjectCreatedEvent){
+        if (e instanceof ProjectCreatedEvent || e instanceof ProjectLoadedEvent) {
             try {
-                
-          FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/offers/OfferToCreateChapter.fxml"));
-          loader.setController(new OfferToCreateChapterController());
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/offers/OfferToCreateChapter.fxml"));
+                loader.setController(new OfferToCreateChapterController());
                 Parent offerToCreateChapterPanel = loader.load();
                 contentPane.setContent(offerToCreateChapterPanel);
             } catch (IOException ex) {
@@ -145,7 +157,7 @@ public class MainScreenController implements ProjectListener{
             }
         }
     }
-    
+
     public void exitApplication(ActionEvent e) {
         System.exit(0);
     }

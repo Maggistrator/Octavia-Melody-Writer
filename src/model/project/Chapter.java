@@ -7,8 +7,15 @@ import java.io.File;
  * 
  * @author Сова
  */
-public class Chapter {
+public class Chapter implements ProjectLevel{
     
     File source;
+
+    public Chapter(File source) {
+        this.source = source;
+    }    
     
+    public String getName(){
+        return source.getName();
+    }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view.support.offers;
 
 import java.net.URL;
@@ -30,7 +25,8 @@ public class OfferToCreateChapterController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ProjectManager manager = ProjectManager.getInstance();
-        projectNameLabel.setText(manager.getProject().name); 
+        projectNameLabel.setText(manager.getProject().name);
+        
     }    
     
     

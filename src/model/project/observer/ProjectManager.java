@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.transform.TransformerException;
 import model.project.Project;
+import model.project.exceptions.ProjectLoadException;
 import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
+import model.project.observer.events.ProjectLoadedEvent;
 
 /**
  * ProjectManager следит за событиями проекта, и уведомляет о его изменениях заинтересованных слушателей
@@ -31,8 +33,9 @@ public class ProjectManager implements ObservableProject {
         //если проект не null, то сохранить его, и уведомить слушателей 
     }
     
-    public void loadProject(String path){
-        //загрузить проект в этот ProjectManager, и уведомить слушателей 
+    public void loadProject(String path) throws ProjectLoadException{
+        this.project = Project.load(path);
+        notify(new ProjectLoadedEvent(project));
     }
 
     /**
