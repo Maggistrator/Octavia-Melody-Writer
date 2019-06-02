@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import model.project.Arch;
 import model.project.Chapter;
-import model.project.ProjectLevel;
 import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
 import model.project.observer.events.ProjectCreatedEvent;
@@ -23,6 +22,7 @@ import model.project.observer.events.ProjectEvent;
 import model.project.observer.events.ProjectLoadedEvent;
 import view.general.navigation.advanced.listeners.BackOptionNodeListener;
 import view.general.navigation.advanced.listeners.ChapterNodeListener;
+import model.project.ProjectNode;
 
 /**
  * Контроллер панели навигации
@@ -51,7 +51,7 @@ public class NavigationController implements ProjectListener{
 
     ProjectManager manager = ProjectManager.getInstance();
     
-    Stack<ProjectLevel> level = new Stack<>();
+    Stack<ProjectNode> level = new Stack<>();
             
     
     @FXML

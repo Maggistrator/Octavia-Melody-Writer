@@ -7,7 +7,7 @@ import java.io.File;
  * 
  * @author Сова
  */
-public class Chapter implements ProjectLevel{
+public class Chapter implements ProjectNode{
     
     File source;
 
@@ -15,7 +15,25 @@ public class Chapter implements ProjectLevel{
         this.source = source;
     }    
     
+    /**
+     * Метод, возвращающий название главы, на основании имени файла
+     * 
+     * @return название данной главы
+     */
     public String getName(){
-        return source.getName();
+        String filename = source.getName();
+        int fileExtensionStartsAt = filename.lastIndexOf('.');
+        String name = fileExtensionStartsAt > 0 ? filename.substring(0, fileExtensionStartsAt) : filename;
+        return name;
+    }
+
+    @Override
+    public File getSource() {
+        return source;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 }

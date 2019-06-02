@@ -72,7 +72,7 @@ public class MainScreenController implements ProjectListener{
     void initialize() {
         //--Загрузка панели навигации--//
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("navigation/navigation.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("navigation/simple/simple_navigation_bar.fxml"));
             this.splitPane.getItems().add(0, root);
             splitPane.setDividerPosition(0, 0.2);
         } catch (IOException ex) {

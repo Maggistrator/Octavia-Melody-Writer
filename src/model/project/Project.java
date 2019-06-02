@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +30,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Сова
  */
-public class Project implements ProjectLevel{
+public class Project implements ProjectNode{
 
     public enum ProjectType {
         Autorship, Translation;
@@ -192,15 +191,21 @@ public class Project implements ProjectLevel{
         //каст б-г мерзкого Path к православному File
         File file = path.toFile();
         
+        
+        System.out.println("File is:"+file);
+        arches.forEach((item)->{
+            System.out.println("stack item:"+item);
+        });
+        
         //если натыкаемся на папку - делаем её Аркой(Томом)
         if (file.isDirectory()) {
             //избавляемся от рута 
-            if(!arches.peek().equals(rootArch))
+            if(!file.toURI().equals(rootArch.source.toURI()))
                 arches.push(new Arch(file));
         }
-        
         //натыкаемся на файл - проверяем, кто является его большим папочкой
         else {
+            if(file.getName().equals("project.xml")) return;
             File parentDirectory = file.getParentFile();
             Arch lastArch = arches.pop();
             //если родительской папкой файла de-facto является папка последней арки, то добавляем его в неё
@@ -220,4 +225,15 @@ public class Project implements ProjectLevel{
     public void delete(){
         
     }
+        
+    @Override
+    public File getSource() {
+        return source;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+    
 }

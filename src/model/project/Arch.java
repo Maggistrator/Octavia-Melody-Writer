@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * 
  *  @author Сова
  */
-public class Arch  implements ProjectLevel{
+public class Arch  implements ProjectNode{
 
     File source;
     private ArrayList<Chapter> chapters = new ArrayList<>();
@@ -60,4 +60,15 @@ public class Arch  implements ProjectLevel{
     public String getName(){
         return source.getName();
     }
+
+    @Override
+    public File getSource() {
+        return source;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+    
 }

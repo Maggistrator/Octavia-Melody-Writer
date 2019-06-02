@@ -4,7 +4,7 @@ import java.util.Stack;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import model.project.ProjectLevel;
+import model.project.ProjectNode;
 
 /**
  *
@@ -12,9 +12,9 @@ import model.project.ProjectLevel;
  */
 public class BackOptionNodeListener implements EventHandler<MouseEvent> {
 
-    Stack<ProjectLevel> navigationStack;
+    Stack<ProjectNode> navigationStack;
 
-    public BackOptionNodeListener(Stack<ProjectLevel> navigationStack) {
+    public BackOptionNodeListener(Stack<ProjectNode> navigationStack) {
         this.navigationStack = navigationStack;
     }
 
