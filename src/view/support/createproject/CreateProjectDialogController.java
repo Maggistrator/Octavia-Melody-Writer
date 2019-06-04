@@ -17,7 +17,6 @@ import javax.swing.JOptionPane;
 import javax.xml.transform.TransformerException;
 import model.project.Project;
 import model.project.observer.ProjectManager;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 
 /**
  *

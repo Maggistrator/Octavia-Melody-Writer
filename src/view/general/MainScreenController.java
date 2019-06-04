@@ -21,9 +21,11 @@ import model.project.Project;
 import model.project.exceptions.ProjectLoadException;
 import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
+import model.project.observer.events.ChapterEditedEvent;
 import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 import model.project.observer.events.ProjectLoadedEvent;
+import view.functions.AutorshipModeController;
 import view.support.offers.OfferToCreateChapterController;
 
 /**
@@ -67,6 +69,7 @@ public class MainScreenController implements ProjectListener{
     ScrollPane contentPane;
     
     ProjectManager manager = ProjectManager.getInstance();
+    Parent autorshipMode;
     
     @FXML
     void initialize() {
@@ -152,6 +155,21 @@ public class MainScreenController implements ProjectListener{
                 loader.setController(new OfferToCreateChapterController());
                 Parent offerToCreateChapterPanel = loader.load();
                 contentPane.setContent(offerToCreateChapterPanel);
+            } catch (IOException ex) {
+                Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (e instanceof ChapterEditedEvent) {
+            try {
+                if (autorshipMode == null) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../functions/autor_mode.fxml"));
+                    String initialText = "<html> <meta charset=\"utf-8\">";
+                    initialText += ((ChapterEditedEvent) e).chapter.load();
+                    AutorshipModeController controller = new AutorshipModeController(initialText);
+                    loader.setController(controller);
+                    Parent autorshipPanel = loader.load();
+                    contentPane.setContent(autorshipPanel);
+                }
             } catch (IOException ex) {
                 Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
             }

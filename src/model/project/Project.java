@@ -191,12 +191,6 @@ public class Project implements ProjectNode{
         //каст б-г мерзкого Path к православному File
         File file = path.toFile();
         
-        
-        System.out.println("File is:"+file);
-        arches.forEach((item)->{
-            System.out.println("stack item:"+item);
-        });
-        
         //если натыкаемся на папку - делаем её Аркой(Томом)
         if (file.isDirectory()) {
             //избавляемся от рута 

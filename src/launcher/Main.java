@@ -1,4 +1,4 @@
-package controller;
+package launcher;
 import java.io.IOException;
 
 import javafx.application.Application;

@@ -60,6 +60,11 @@ public class SimpleNavigationController implements ProjectListener {
             if (mouseEvent.getClickCount() == 2) {
                 TreeItem<ProjectNode> item = navigator.getSelectionModel().getSelectedItem();
                 System.out.println("Selected file is : " + item.getValue());
+                if(item.getValue() instanceof Chapter){
+                    System.out.println("value:"+item.getValue());
+                    if((Chapter) item.getValue() != null)
+                    manager.addChapterToEditedList((Chapter) item.getValue());
+                }
             }
         });
     }
@@ -102,7 +107,12 @@ public class SimpleNavigationController implements ProjectListener {
 
                 //оборачиваем главы верхнего уровня в объекты узлов дерева
                 for (Chapter chapter : event.project.root.getChaptersList()) {
-                    TreeItem<ProjectNode> chapterNode = new TreeItem<>(chapter);
+                    TreeItem<ProjectNode> chapterNode = new TreeItem<>(chapter);                            //устанавливаем красивую иконку главе
+                    File chapterIconFile = new File("res/chapter icon3.png");
+                    ImageView chapterIcon = new ImageView(new Image(chapterIconFile.toURI().toURL().toString()));
+                    chapterIcon.setFitHeight(16);
+                    chapterIcon.setFitWidth(16);
+                    chapterNode.setGraphic(chapterIcon);
                     navigator.getRoot().getChildren().add(chapterNode);
                 }
 

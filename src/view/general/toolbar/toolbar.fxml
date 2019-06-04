@@ -15,7 +15,7 @@
             <Insets left="5.0" top="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../res/book.png" />
                </image>
@@ -27,7 +27,7 @@
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../res/feather.png" />
                </image>
@@ -42,7 +42,7 @@
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../res/glossary.png" />
                </image>
@@ -57,7 +57,7 @@
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../res/publish.png" />
                </image>
@@ -72,9 +72,9 @@
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../res/pencil.png" />
+                  <Image url="@../../../../res/chapter%20icon.png" />
                </image>
             </ImageView>
          </graphic>
