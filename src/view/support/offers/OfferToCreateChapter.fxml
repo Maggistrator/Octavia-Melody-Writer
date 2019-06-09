@@ -8,21 +8,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="CENTER" layoutX="104.0" layoutY="37.0" prefHeight="326.0" prefWidth="392.0" AnchorPane.bottomAnchor="37.0" AnchorPane.leftAnchor="104.0" AnchorPane.rightAnchor="104.0" AnchorPane.topAnchor="37.0">
          <children>
-            <Label fx:id="projectNameLabel" alignment="TOP_CENTER" disable="true" prefHeight="80.0" prefWidth="350.0" text="Name" textAlignment="CENTER" wrapText="true">
+            <Label fx:id="projectNameLabel" alignment="TOP_CENTER" disable="true" prefHeight="34.0" prefWidth="350.0" text="Name" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="24.0" />
                </font>
             </Label>
-            <Button fx:id="createChapterButton" alignment="CENTER" mnemonicParsing="false" text="Создать главу" textAlignment="CENTER" />
-            <Label disable="true" prefHeight="76.0" prefWidth="120.0" text="Нажмите на кнопку, чтобы создать главу" textAlignment="CENTER" wrapText="true">
+            <Label disable="true" prefHeight="46.0" prefWidth="137.0" text="Выберите главу для редактирования:" textAlignment="CENTER" wrapText="true">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
             </Label>
+            <ListView fx:id="chaptersList" prefHeight="200.0" prefWidth="200.0" style="-fx-alignment: center;" />
+            <Label disable="true" prefHeight="38.0" prefWidth="117.0" text="Или создайте новую!" textAlignment="CENTER" wrapText="true">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+            <Button fx:id="createChapterButton" alignment="CENTER" mnemonicParsing="false" onAction="#createChapter" prefHeight="25.0" prefWidth="134.0" text="Создать главу" textAlignment="CENTER" />
          </children>
       </VBox>
    </children>

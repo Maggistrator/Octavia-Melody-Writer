@@ -8,6 +8,8 @@ import java.io.File;
  */
 public interface ProjectNode {
     
+    void save() throws Exception;
+    
     File getSource();
     
 }

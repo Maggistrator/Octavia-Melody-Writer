@@ -63,7 +63,7 @@ public class Project implements ProjectNode{
      * @param path папка, в которой содержатся файлы проекта - своего рода workspace
      */
     public Project(String name, File path) {
-        this.name = name; 
+        this.name = name;
         this.source = path;
     }
     
@@ -74,14 +74,13 @@ public class Project implements ProjectNode{
      */
     public void save() throws IOException, TransformerException {
         //-------------Создание проекта, если он еще не существует----------//
-        File projectHome = new File(source.getAbsolutePath() + "/" + name);
-        if (!projectHome.exists()) {
+        if (!source.exists()) {
             try {
                 //создаем новую папку для этого проекта
-                projectHome.mkdir();
+                source.mkdir();
                 
                 //project.xml
-                File projectProperties = new File(projectHome.getAbsolutePath() + "/project.xml");
+                File projectProperties = new File(source.getAbsolutePath() + "/project.xml");
                 projectProperties.createNewFile();
                 
                 //Записываем в него начальные параметры
@@ -122,6 +121,10 @@ public class Project implements ProjectNode{
                 // You can use that for debugging
 
                 transformer.transform(domSource, streamResult);
+                
+                //обрабатываем рабочую директорию проекта
+                Arch rootArch = new Arch(source);
+                this.root = rootArch;//добавляем место для файлов без главы или тома
             } catch (ParserConfigurationException ex) {
                 Logger.getLogger(Project.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -160,7 +163,7 @@ public class Project implements ProjectNode{
                 String type = document.getElementsByTagName("type").item(0).getTextContent();
                 
                 //вводим ключевые поля проекта
-                Project project = new Project(name, projectConfig);
+                Project project = new Project(name, projectConfig.getParentFile());
                 project.description = description;
                 project.fandom = fandom;
                 project.type = type.equals("Autorship") ? ProjectType.Autorship : ProjectType.Translation;
@@ -213,6 +216,13 @@ public class Project implements ProjectNode{
         }
     }
 
+    public Chapter createChapter(String name, Arch parent) throws IOException{
+        File chapterSource = new File(parent.source.getAbsolutePath()+"/"+name+".tavi");
+        Chapter chapter = new Chapter(chapterSource);
+        chapter.save();
+        return chapter;
+    }
+    
     /**
      * Удаляет текущий проект из файловой системы
      */

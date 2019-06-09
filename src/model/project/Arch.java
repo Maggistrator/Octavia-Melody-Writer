@@ -70,5 +70,10 @@ public class Arch  implements ProjectNode{
     public String toString() {
         return getName();
     }
+
+    @Override
+    public void save() throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

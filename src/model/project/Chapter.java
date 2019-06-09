@@ -1,8 +1,8 @@
 package model.project;
 
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -16,8 +16,9 @@ import java.nio.file.Paths;
  */
 public class Chapter implements ProjectNode{
     
-    File source;
+    public File source;
     public boolean edited = false;
+    private String contents;
 
     public Chapter(File source) {
         this.source = source;
@@ -40,32 +41,41 @@ public class Chapter implements ProjectNode{
         return source;
     }
     
-    public void save(){}
+    /**
+     * Сохраняет главу, или создает её, если она ещё не существует
+     * @throws java.io.IOException ошибка записи
+     */
+    @Override
+    public void save() throws IOException {
+        if(source.exists()) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(source, false))) {
+                writer.write(contents);
+                writer.close();
+            }
+        }
+        else source.createNewFile();
+    }
 
     public String load() throws IOException {
         Path preferredPath = Paths.get(source.toURI());
         
         StringBuilder sb = new StringBuilder();
-        Files.lines(preferredPath, Charset.forName("windows-1251")).forEach((line)->{
+        Files.lines(preferredPath, Charset.forName("utf-8")).forEach((line)->{
             sb.append(line);
+            sb.append("<br>");
         });
-//
-//        try (BufferedReader br = Files.newBufferedReader(preferredPath)) {
-//
-//            // read line by line
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                sb.append(line).append("\n");
-//            }
-//
-//        } catch (IOException e) {
-//            System.err.format("IOException: %s%n", e);
-//        }
-
-        System.out.println(sb);
-        return sb.toString();
+        setText(sb.toString());
+        return contents;
     }
-
+    
+    public void setText(String toString){
+        contents = toString;
+    }
+    
+    public String getText(){
+        return contents;
+    }
+    
     @Override
     public String toString() {
         return getName();

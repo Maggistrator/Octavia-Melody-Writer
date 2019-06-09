@@ -5,27 +5,31 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
-import model.project.Project;
+import model.project.Chapter;
 import model.project.exceptions.ProjectLoadException;
 import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
-import model.project.observer.events.ChapterEditedEvent;
+import model.project.observer.events.ProjectNodeEditedEvent;
 import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 import model.project.observer.events.ProjectLoadedEvent;
-import view.functions.AutorshipModeController;
+import view.functions.autorship.AutorshipModeController;
+import view.support.modal.controllers.CreateChapterDialogController;
 import view.support.offers.OfferToCreateChapterController;
 
 /**
@@ -66,7 +70,7 @@ public class MainScreenController implements ProjectListener{
     SplitPane splitPane;
     
     @FXML
-    ScrollPane contentPane;
+    TabPane contentPane;
     
     ProjectManager manager = ProjectManager.getInstance();
     Parent autorshipMode;
@@ -89,7 +93,7 @@ public class MainScreenController implements ProjectListener{
             FXMLLoader loader = new FXMLLoader();
             //Parent root = loader.load(getClass().getResource("../functions/autor_mode.fxml"));
             Parent root = loader.load(getClass().getResource("../support/offers/OfferToCreateProject.fxml"));
-            this.contentPane.setContent(root);
+            this.contentPane.getTabs().add(new Tab("General", root));
         } catch (IOException ex) {
             System.err.println("Не удалось загрузить панель контента");
             ex.printStackTrace();
@@ -111,7 +115,7 @@ public class MainScreenController implements ProjectListener{
     public void createProject(ActionEvent e) {
         try {
             //загрузка рутпанели-наблюдателя
-            Parent root = FXMLLoader.load(getClass().getResource("../support/createproject/create_project_window.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../support/modal/fxml/create_project_window.fxml"));
            
             //настройки модального окна
             Stage stage = new Stage();
@@ -149,33 +153,90 @@ public class MainScreenController implements ProjectListener{
 
     @Override
     public void dispatch(ProjectEvent e) {
-        if (e instanceof ProjectCreatedEvent || e instanceof ProjectLoadedEvent) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/offers/OfferToCreateChapter.fxml"));
-                loader.setController(new OfferToCreateChapterController());
-                Parent offerToCreateChapterPanel = loader.load();
-                contentPane.setContent(offerToCreateChapterPanel);
-            } catch (IOException ex) {
-                Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        if (e instanceof ProjectCreatedEvent) {
+            processProjectCreatedEvent(e);
         }
-        if (e instanceof ChapterEditedEvent) {
-            try {
-                if (autorshipMode == null) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../functions/autor_mode.fxml"));
-                    String initialText = "<html> <meta charset=\"utf-8\">";
-                    initialText += ((ChapterEditedEvent) e).chapter.load();
-                    AutorshipModeController controller = new AutorshipModeController(initialText);
-                    loader.setController(controller);
-                    Parent autorshipPanel = loader.load();
-                    contentPane.setContent(autorshipPanel);
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        
+        if(e instanceof ProjectLoadedEvent){
+            processProjectCreatedEvent(e);
+        }
+        
+        if (e instanceof ProjectNodeEditedEvent) {
+            ProjectNodeEditedEvent projectNodeEditedEvent = (ProjectNodeEditedEvent) e;
+            
+            if(projectNodeEditedEvent.node instanceof Chapter) dispatchChapterEditedEvent(projectNodeEditedEvent);
+        }
+    }
+    
+    private void processProjectCreatedEvent(ProjectEvent e) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/offers/OfferToCreateChapter.fxml"));
+            OfferToCreateChapterController controller = new OfferToCreateChapterController();
+            controller.setParent(contentPane);
+            loader.setController(controller);
+            Parent offerToCreateChapterPanel = loader.load();
+            this.contentPane.getTabs().clear();
+            this.contentPane.getTabs().add(new Tab(manager.getProject().name, offerToCreateChapterPanel));
+        } catch (IOException ex) {
+            Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    private void dispatchChapterEditedEvent(ProjectNodeEditedEvent chapterEvent) {
+        try {
+            if (autorshipMode == null) {
+                //загружаем главу в текстовую область
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../functions/autorship/autor_mode.fxml"));
+                AutorshipModeController controller = new AutorshipModeController();
+                loader.setController(controller);
+                Parent autorshipPanel = loader.load();
+                controller.dispatch(chapterEvent);
+                //создаём новую вкладку
+                Tab tab = new Tab(chapterEvent.node.toString(), autorshipPanel);
+                
+                //выбираем новенькую вкладку как текущую
+                SingleSelectionModel<Tab> selectionModel = contentPane.getSelectionModel();
+                selectionModel.select(tab);
+                
+                //добавляем слушатель закрытия вкладки
+                tab.setOnClosed((Event event) -> {
+                    try {
+                        int answer = JOptionPane.showConfirmDialog(null, "Сохранить изменения?");
+                        if (answer == JOptionPane.OK_OPTION) manager.canselEditingChapter((Chapter) chapterEvent.node, true);
+                        else manager.canselEditingChapter((Chapter) chapterEvent.node, false);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Ошибка записи!");
+                    }
+                });
+                this.contentPane.getTabs().add(tab);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @FXML
+    private void createChapter(Event e){
+        try {
+            //загружаем диалог создания главы
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../support/modal/fxml/create_chapter.fxml"));
+            CreateChapterDialogController controller = new CreateChapterDialogController();
+            controller.setParent(contentPane);
+            loader.setController(controller);
+            Parent root = loader.load();
+            
+            // создаём  новую вкладку и добавляем её на панель
+            Tab newChapterCreation = new Tab("Создать главу", root);
+            contentPane.getTabs().add(newChapterCreation);
+            
+            //выбираем новенькую вкладку как текущую
+            SingleSelectionModel<Tab> selectionModel = contentPane.getSelectionModel();
+            selectionModel.select(newChapterCreation); 
+        } catch (IOException ex) {
+            Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void exitApplication(ActionEvent e) {
         System.exit(0);
     }

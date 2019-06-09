@@ -1,4 +1,4 @@
-package view.support.createproject;
+package view.support.modal.controllers;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class CreateProjectDialogController {
            }
            
            //создаём объект Project
-           Project project = new Project(name, new File(path));
+           Project project = new Project(name, new File(path+"/"+name));
            project.fandom = fandom;
            project.description = summory;
            project.type = type;

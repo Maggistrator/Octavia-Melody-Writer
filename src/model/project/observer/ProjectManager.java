@@ -3,13 +3,15 @@ package model.project.observer;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.transform.TransformerException;
+import model.project.Arch;
 import model.project.Chapter;
 import model.project.Project;
 import model.project.exceptions.ProjectLoadException;
-import model.project.observer.events.ChapterEditedEvent;
+import model.project.observer.events.ProjectNodeEditedEvent;
 import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 import model.project.observer.events.ProjectLoadedEvent;
+import model.project.observer.events.ProjectNodeCreatedEvent;
 
 /**
  * ProjectManager следит за событиями проекта, и уведомляет о его изменениях заинтересованных слушателей
@@ -46,7 +48,7 @@ public class ProjectManager implements ObservableProject {
     }
     
     public void loadProject(String path) throws ProjectLoadException{
-        this.project = Project.load(path);
+        this.project = (Project) Project.load(path);
         notify(new ProjectLoadedEvent(project));
     }
 
@@ -106,17 +108,39 @@ public class ProjectManager implements ObservableProject {
     public Project getProject(){
         return project;
     }
-
     
-    public void addChapterToEditedList(Chapter chapter){
-        chapter.edited = true;
-        editedChapters.add(chapter);
-        notify(new ChapterEditedEvent(chapter));
+    /**
+     * Этот метод создаёт новую главу
+     * @param name имя главы
+     * @param parent арка, в которой она находится
+     * @throws java.io.IOException ошибка записи
+     */
+    public void createChapter(String name, Arch parent) throws IOException{
+        Chapter newChapter = project.createChapter(name, parent);
+        notify(new ProjectNodeCreatedEvent(newChapter, parent));
     }
     
-    public void removeChapterFromEditedList(Chapter chapter){
+    /** 
+     * Метод редактирования главы. 
+     * Его задача, уведомить слушателей о том, что глава получила статус редактируемой, а не внести в неё изменения
+     * @param chapter глава, которая стала редактируемой
+     */
+    public void editChapter(Chapter chapter) {
         chapter.edited = true;
         editedChapters.add(chapter);
+        notify(new ProjectNodeEditedEvent(chapter));
+    }
+    
+    /**
+     * Метод, снимающий с главы статус редактируемой, и уведомляющей об этом слушателей 
+     * @param chapter глава, редактирование которой прекращено
+     * @param needSave флаг, указывающий на то, нужно ли сохранять изменения
+     * @throws java.io.IOException ошибка записи
+     */
+    public void canselEditingChapter(Chapter chapter, boolean needSave) throws IOException{
+        if(needSave) chapter.save();
+        chapter.edited = false;
+        editedChapters.remove(chapter);
     }
 
     public ArrayList<Chapter> getEditedChapters() {

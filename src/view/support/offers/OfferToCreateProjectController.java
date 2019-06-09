@@ -43,7 +43,7 @@ public class OfferToCreateProjectController implements Initializable {
     private void createProject(ActionEvent e){
             try {
             //загрузка рутпанели-наблюдателя
-            Parent root = FXMLLoader.load(getClass().getResource("../createproject/create_project_window.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../modal/fxml/create_project_window.fxml"));
            
             //настройки модального окна
             Stage stage = new Stage();

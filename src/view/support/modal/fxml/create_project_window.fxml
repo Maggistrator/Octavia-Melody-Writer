@@ -6,7 +6,7 @@
 <?import javafx.collections.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="365.0" styleClass="pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.support.createproject.CreateProjectDialogController">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="365.0" styleClass="pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.support.modal.controllers.CreateProjectDialogController">
     <children>
         <TextField fx:id="nameField" layoutX="29.0" layoutY="89.0" onMousePressed="#erroreousNameFocusGained" prefHeight="25.0" prefWidth="300.0" promptText="Моя книга будет называться..." AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="85.0" />
         <TextField fx:id="pathField" layoutX="29.0" layoutY="206.0" onMousePressed="#erroreousPathFocusGained" prefHeight="25.0" prefWidth="230.0" promptText="укажите папку.." AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="205.0" />
