@@ -3,3 +3,5 @@
 bin/
 /nbproject/private/
 /build/
+/dist/
+/lib/

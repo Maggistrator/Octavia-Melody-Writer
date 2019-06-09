@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.support.offers.OfferToCreateProjectController">
+   <children>
+      <VBox alignment="CENTER" layoutX="216.0" layoutY="10.0" prefHeight="380.0" prefWidth="169.0" spacing="5.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="216.0" AnchorPane.rightAnchor="215.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Button fx:id="loadProjectButton" alignment="CENTER" mnemonicParsing="false" onAction="#loadProject" text="Открыть проект" textAlignment="CENTER" />
+            <Button fx:id="createProjectButton" alignment="CENTER" mnemonicParsing="false" onAction="#createProject" text="Создать проект" textAlignment="CENTER" />
+            <Label disable="true" prefHeight="56.0" prefWidth="169.0" text="Чтобы начать работу, создайте новое произведение или откройте существующее" textAlignment="CENTER" wrapText="true">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

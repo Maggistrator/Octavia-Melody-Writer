@@ -11,12 +11,11 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.general.MainScreenController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #FFF0D0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <SplitPane dividerPositions="0.15" layoutY="19.0" prefHeight="577.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="23.0">
+      <SplitPane fx:id="splitPane" layoutY="19.0" prefHeight="577.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="23.0">
          <items>
-            <fx:include fx:id="navigation" source="navigation/navigation.fxml" />
-            <ScrollPane id="contentPane" fx:id="contentPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="575.0" prefViewportHeight="600.0" prefViewportWidth="561.0" prefWidth="697.0" />
+            <TabPane fx:id="contentPane" prefHeight="200.0" prefWidth="200.0" />
          </items>
       </SplitPane>
       <MenuBar layoutY="-1.0" prefHeight="25.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
@@ -24,15 +23,13 @@
           <Menu mnemonicParsing="false" text="Проект">
             <items>
               <MenuItem fx:id="createProjectMenuItem" mnemonicParsing="false" text="Новый проект" />
-                  <MenuItem fx:id="saveProjectMenuItem" mnemonicParsing="false" text="Сохранить" />
-                  <MenuItem fx:id="loadProjectMenuItem" mnemonicParsing="false" text="Загрузить" />
-                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#Kek" text="Выйти" />
+                  <MenuItem fx:id="loadProjectMenuItem" mnemonicParsing="false" text="Загрузить проект" />
+                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Выйти" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Глава">
                <items>
-                  <MenuItem fx:id="createChapterMenuItem" mnemonicParsing="false" text="Новая глава" />
-                  <MenuItem fx:id="chapterSettingsMenuItem" mnemonicParsing="false" text="Параметры главы" />
+                  <MenuItem fx:id="createChapterMenuItem" mnemonicParsing="false" onAction="#createChapter" text="Новая глава" />
                </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Режим">
@@ -45,7 +42,7 @@
       </MenuBar>
       <Pane layoutX="862.0" layoutY="24.0" prefHeight="575.0" prefWidth="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">
          <children>
-            <fx:include source="toolbar/toolbar.fxml" />
+            <fx:include fx:id="toolbar" source="toolbar/toolbar.fxml" />
          </children>
       </Pane>
    </children>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" fx:id="rootPanel" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <TextField fx:id="nameField" layoutX="170.0" layoutY="166.0" prefHeight="25.0" prefWidth="265.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="165.0" AnchorPane.topAnchor="166.0" />
+      <Text fill="#5b5b5b" layoutX="169.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Название главы:" AnchorPane.leftAnchor="169.0" AnchorPane.rightAnchor="315.736328125" AnchorPane.topAnchor="141.9921875">
+         <font>
+            <Font name="Tahoma" size="16.0" />
+         </font>
+      </Text>
+      <ChoiceBox fx:id="archSelector" layoutX="170.0" layoutY="216.0" prefHeight="25.0" prefWidth="265.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="165.0" AnchorPane.topAnchor="216.0" />
+      <Text fill="#5b5b5b" layoutX="169.0" layoutY="210.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Арка/том" AnchorPane.leftAnchor="169.0" AnchorPane.rightAnchor="372.251953125" AnchorPane.topAnchor="193.9921875">
+         <font>
+            <Font name="Tahoma" size="16.0" />
+         </font>
+      </Text>
+      <Label layoutX="244.0" layoutY="55.0" text="Создать главу!" textFill="#616161" AnchorPane.leftAnchor="244.0" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="55.0">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Label>
+      <Button fx:id="applyButton" layoutX="275.0" layoutY="280.0" mnemonicParsing="false" onAction="#apply" text="Готово" AnchorPane.leftAnchor="275.0" AnchorPane.rightAnchor="270.0" AnchorPane.topAnchor="280.0" />
+      <ImageView fitHeight="64.0" fitWidth="64.0" layoutX="174.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../res/chapter%20icon4.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

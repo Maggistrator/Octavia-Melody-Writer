@@ -10,26 +10,26 @@
 
 <VBox fx:id="toolbar" prefHeight="575.0" prefWidth="40.0" spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button focusTraversable="false" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="toolStyle" stylesheets="@roundbutton.css" textAlignment="CENTER" VBox.vgrow="NEVER">
+      <Button focusTraversable="false" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="toolStyle" stylesheets="@roundbutton.css">
          <VBox.margin>
             <Insets left="5.0" top="5.0" />
          </VBox.margin>
-               <graphic>
-        <ImageView fx:id="dictionary" fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-          <image>
-            <Image url="@../../../../res/dictionary-icon2.png" />
-          </image>
-        </ImageView>
-      </graphic>
+         <graphic>
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../res/book.png" />
+               </image>
+            </ImageView>
+         </graphic>
       </Button>
       <Button fx:id="history" focusTraversable="false" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="toolStyle" stylesheets="@roundbutton.css">
          <VBox.margin>
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../res/history.png" />
+                  <Image url="@../../../../res/feather.png" />
                </image>
             </ImageView>
          </graphic>
@@ -42,7 +42,7 @@
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../res/glossary.png" />
                </image>
@@ -57,7 +57,7 @@
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../res/publish.png" />
                </image>
@@ -72,9 +72,9 @@
             <Insets left="5.0" />
          </VBox.margin>
          <graphic>
-            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../res/notes2.png" />
+                  <Image url="@../../../../res/chapter%20icon.png" />
                </image>
             </ImageView>
          </graphic>
