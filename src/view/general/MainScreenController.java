@@ -43,28 +43,16 @@ public class MainScreenController implements ProjectListener{
     MenuItem createProjectMenuItem;
 
     @FXML
-    MenuItem saveProjectMenuItem;
-
-    @FXML
     MenuItem loadProjectMenuItem;
 
     @FXML
     MenuItem exitMenuItem;
 
     @FXML
-    MenuItem chapterSettingsMenuItem;
-
-    @FXML
     MenuItem createChapterMenuItem;
     
     @FXML
     MenuItem createArchMenuItem;
-
-    @FXML
-    MenuItem autorModeMenuItem;
-
-    @FXML
-    MenuItem translatorModeMenuItem;
 
     @FXML
     VBox toolbar;

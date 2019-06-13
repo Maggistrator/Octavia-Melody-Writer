@@ -140,6 +140,7 @@ public class ProjectManager implements ObservableProject {
 
     public void deleteNode(ProjectNode node) throws IOException{
         node.delete();
+        if(node instanceof Project) this.project = null;
         notify(new ProjectNodeDeletedEvent(node));
     }
     

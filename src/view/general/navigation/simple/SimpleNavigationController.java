@@ -52,15 +52,6 @@ public class SimpleNavigationController implements ProjectListener {
     @FXML
     private Label header;
 
-    @FXML
-    private TextArea hintArea;
-
-    @FXML
-    private Separator separator;
-
-    @FXML
-    private Label hideButton;
-
     ProjectManager manager = ProjectManager.getInstance();
     TabPane contentPane;
     ContextMenu navigatorMenu = new ContextMenu();
@@ -181,7 +172,6 @@ public class SimpleNavigationController implements ProjectListener {
     }
 
     private void dispatchNodeDeletion(ProjectNode node) throws IOException {
-            System.out.println("parent:"+node.getParent());
             
         //если у нода есть родительский нод, значит это не проект
         if (node.getParent() != null) {
@@ -190,8 +180,8 @@ public class SimpleNavigationController implements ProjectListener {
             File rootPath = navigator.getRoot().getValue().getSource();
             
             //готовимся узнать родительский нод, и искомый
-            TreeItem parentNode = null;
-            TreeItem nodeToDelete = null;
+            TreeItem<ProjectNode> parentNode = null;
+            TreeItem<ProjectNode> nodeToDelete = null;
             
             //если родительский нод является корнем..
             if (rootPath.getAbsolutePath().equals(parentPath.getAbsolutePath())) {
@@ -210,11 +200,14 @@ public class SimpleNavigationController implements ProjectListener {
                     File archPath = rootChild.getValue().getSource();
                     if (archPath.getAbsolutePath().equals(parentPath.getAbsolutePath())) {
                         parentNode = rootChild;
+                        System.out.println("parent:"+parentNode);
                         //..и только потом искомого
-                        for (TreeItem leaf : rootChild.getChildren()) {
-                            File leafPath = rootChild.getValue().getSource();
+                        for (TreeItem<ProjectNode> leaf : parentNode.getChildren()) {
+                            File leafPath = leaf.getValue().getSource();
+                        System.out.println("leafPath:"+leaf);
+                        System.out.println("leafPath.getAbsolutePath().equals(neededPath.getAbsolutePath()):"+(leafPath.getAbsolutePath().equals(neededPath.getAbsolutePath())));
                             if (leafPath.getAbsolutePath().equals(neededPath.getAbsolutePath())) {
-                                nodeToDelete = rootChild;
+                                nodeToDelete = leaf;
                             }
                         }
                     }
@@ -224,6 +217,8 @@ public class SimpleNavigationController implements ProjectListener {
             parentNode.getChildren().remove(nodeToDelete);
         } else {
             navigator.setRoot(null);
+            header.setText("Name");
+            contentPane.getTabs().clear();
         }
     }
 
