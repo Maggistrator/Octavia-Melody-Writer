@@ -19,9 +19,11 @@ public class Chapter implements ProjectNode{
     public File source;
     public boolean edited = false;
     private String contents;
+    private final Arch parent;
 
-    public Chapter(File source) {
+    public Chapter(File source, Arch parent) {
         this.source = source;
+        this.parent = parent;
     }    
     
     /**
@@ -68,6 +70,12 @@ public class Chapter implements ProjectNode{
         return contents;
     }
     
+    @Override
+    public void delete() throws IOException {
+        source.delete();
+        parent.getChaptersList().remove(this);
+    }
+    
     public void setText(String toString){
         contents = toString;
     }
@@ -80,4 +88,18 @@ public class Chapter implements ProjectNode{
     public String toString() {
         return getName();
     }
+
+    @Override
+    public void rename(String newName) throws IOException {
+        File oldFile = source;
+        File newFile = new File(source.getParent()+"/"+newName);
+        
+        if(!oldFile.renameTo(newFile)) throw new IOException("Rename failed!");
+    }
+
+    @Override
+    public ProjectNode getParent() {
+        return parent;
+    }
+
 }

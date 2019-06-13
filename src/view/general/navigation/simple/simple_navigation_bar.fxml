@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="view.general.navigation.simple.SimpleNavigationController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
          <AnchorPane layoutY="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
             <children>
@@ -19,10 +19,7 @@
                <Separator layoutX="1.0" layoutY="32.0" prefHeight="3.0" prefWidth="170.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
             </children>
          </AnchorPane>
-         <Separator fx:id="separator" layoutY="484.0" prefHeight="3.0" prefWidth="170.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-         <Label fx:id="hideButton" layoutX="127.0" layoutY="556.0" text="Скрыть" textFill="#909090" underline="true" AnchorPane.bottomAnchor="2.0" AnchorPane.rightAnchor="5.0" />
-         <TextArea fx:id="hintArea" disable="true" editable="false" prefHeight="63.0" prefWidth="153.0" wrapText="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
-      <TreeView fx:id="navigator" editable="true" focusTraversable="false" layoutY="34.0" prefHeight="470.0" prefWidth="200.0" AnchorPane.bottomAnchor="96.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="34.0" />
+      <TreeView fx:id="navigator" editable="true" focusTraversable="false" layoutY="29.0" prefHeight="572.0" prefWidth="200.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" />
    </children>
 
 </AnchorPane>

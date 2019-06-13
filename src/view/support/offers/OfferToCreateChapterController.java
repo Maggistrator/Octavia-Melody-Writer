@@ -7,10 +7,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,18 +18,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
 import javax.swing.JOptionPane;
 import model.project.Arch;
 import model.project.Chapter;
-import model.project.ProjectNode;
 import model.project.observer.ProjectManager;
-import view.general.navigation.simple.SimpleNavigationController;
+import view.functions.autorship.AutorshipModeController;
+import view.general.MainScreenController;
 import view.support.modal.controllers.CreateChapterDialogController;
 
 /**
@@ -132,7 +127,7 @@ public class OfferToCreateChapterController implements Initializable {
         //эта колбаса смерти отвечает за клик
         chapterLabel.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() == 2) {
-                ProjectManager.getInstance().editChapter(chapter);
+                editChapter(chapter);
             }
         });
         //эта за наведение курсора
@@ -140,5 +135,39 @@ public class OfferToCreateChapterController implements Initializable {
         //это за увод за пределы компонента
         chapterLabel.setOnMouseExited((MouseEvent event) -> chapterLabel.setStyle("-fx-font-weight: normal;"));
         return chapterLabel;
+    }
+    
+    private void editChapter(Chapter chapter) {
+        try {
+            //загружаем главу в текстовую область
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../functions/autorship/autor_mode.fxml"));
+            AutorshipModeController controller = new AutorshipModeController();
+            loader.setController(controller);
+            Parent autorshipPanel = loader.load();
+            controller.initWithChapter(chapter);
+            //создаём новую вкладку
+            Tab tab = new Tab(chapter.getName(), autorshipPanel);
+
+            //выбираем новенькую вкладку как текущую
+            SingleSelectionModel<Tab> selectionModel = parent.getSelectionModel();
+            selectionModel.select(tab);
+
+            //добавляем слушатель закрытия вкладки
+            tab.setOnClosed((Event event) -> {
+                try {
+                    int answer = JOptionPane.showConfirmDialog(null, "Сохранить изменения?");
+                    if (answer == JOptionPane.OK_OPTION) {
+                        ProjectManager.getInstance().canselEditingChapter(chapter, true);
+                    } else {
+                        ProjectManager.getInstance().canselEditingChapter(chapter, false);
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Ошибка записи!");
+                }
+            });
+            this.parent.getTabs().add(tab);
+        } catch (IOException ex) {
+            Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

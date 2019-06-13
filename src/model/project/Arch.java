@@ -1,7 +1,14 @@
 package model.project;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *  Арка - крупное подразделение произведения.
@@ -9,17 +16,19 @@ import java.util.ArrayList;
  * 
  *  @author Сова
  */
-public class Arch  implements ProjectNode{
+public class Arch implements ProjectNode{
 
     File source;
     private ArrayList<Chapter> chapters = new ArrayList<>();
-
+    private Project parent;
+            
     public Arch(ArrayList<Chapter> chapters) {
         this.chapters = chapters;
     }
     
-    public Arch(File source) {
+    public Arch(File source, Project parent) {
         this.source = source;
+        this.parent = parent;
     }
 
     public void addChapter(Chapter chapter){
@@ -72,8 +81,43 @@ public class Arch  implements ProjectNode{
     }
 
     @Override
-    public void save() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void save() throws IOException {
+        if(source.exists()){
+            chapters.forEach((Chapter chapter)-> {
+                try {
+                    save();
+                } catch (IOException ex) {
+                    Logger.getLogger(Arch.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        }
+        else source.mkdir();
+    }
+
+    /**
+     * Удаляет арку из файловой системы
+     * @throws java.io.IOException ошибка удаления
+     */
+    @Override
+    public void delete() throws IOException{
+        parent.content.remove(this);
+        Files.walk(Paths.get(source.toURI()))
+            .sorted(Comparator.reverseOrder())
+            .map(Path::toFile)
+            .forEach(File::delete);
+    }
+
+    @Override
+    public void rename(String newName) throws IOException {
+        File oldFile = source;
+        File newFile = new File(source.getParent()+"/"+newName);
+        
+        if(!oldFile.renameTo(newFile)) throw new IOException("Rename failed!");
+    }
+
+    @Override
+    public ProjectNode getParent() {
+        return parent;
     }
     
 }

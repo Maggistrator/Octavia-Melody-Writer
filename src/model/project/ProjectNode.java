@@ -1,6 +1,7 @@
 package model.project;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -8,8 +9,13 @@ import java.io.File;
  */
 public interface ProjectNode {
     
-    void save() throws Exception;
+    void save() throws IOException;
+    
+    void delete() throws IOException;
+    
+    void rename(String newName) throws IOException;
+    
+    ProjectNode getParent();
     
     File getSource();
-    
 }

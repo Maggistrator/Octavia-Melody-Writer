@@ -3,6 +3,8 @@ package view.support.modal.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +17,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import javax.swing.JOptionPane;
-import model.project.Arch;
 import model.project.observer.ProjectManager;
 import org.controlsfx.control.PopOver;
 
@@ -24,45 +25,39 @@ import org.controlsfx.control.PopOver;
  *
  * @author Сова
  */
-public class CreateChapterDialogController implements Initializable {
 
-    @FXML
-    private Button applyButton;
+public class CreateArchController implements Initializable {
 
     @FXML
     private TextField nameField;
 
     @FXML
-    private ChoiceBox<Arch> archSelector;
+    private Label projectNameLabel;
+
+    @FXML
+    private Button acceptButton;
     
     @FXML
     private AnchorPane rootPanel;
 
     ProjectManager manager = ProjectManager.getInstance();
     private TabPane parent;
-    private Arch initialArch;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        for (Arch arch : manager.getProject().content) {
-            archSelector.getItems().add(arch);
-        }
-        if(initialArch != null) archSelector.getSelectionModel().select(initialArch);
-        archSelector.getItems().add(manager.getProject().root);
+        projectNameLabel.setText(manager.getProject().name);
     }
     
     @FXML
     private void apply(Event e) {
         try {
-            //создаём главу
             String name = nameField.getText();
-            
             if (name.matches("[aA-zZ аА-яЯ 0-9 \\s]*$") && !name.isEmpty()) {
-                Arch parentArch = archSelector.getValue() == null ? manager.getProject().root : archSelector.getValue();
-                manager.createChapter(name, parentArch);
+                manager.createArch(name);
                 
                 //убираем текущую вкладку
                 parent.getTabs().removeIf((Tab t) -> {
+                    //этот хитрый алгоритм ищет fx-id текущего окна во всех открытых вкладках
                     if (t.getContent().getId() == null)return false;
                     else return t.getContent().getId().equals(rootPanel.getId());
                 });
@@ -80,15 +75,12 @@ public class CreateChapterDialogController implements Initializable {
                 popOver.show(nameField);
             }
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "В процессе создания главы произошла ошибка!\n Причина:"+ex.getMessage());
-        }
+            JOptionPane.showMessageDialog(null, "В процессе создания арки произошла ошибка!\n Причина:"+ex.getMessage());
+        } 
     }
     
     public void setParent(TabPane parent){
         this.parent = parent;
     }
-
-    public void setInitialArch(Arch arch){
-        this.initialArch = arch;
-    }
 }
+

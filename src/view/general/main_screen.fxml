@@ -32,12 +32,11 @@
                   <MenuItem fx:id="createChapterMenuItem" mnemonicParsing="false" onAction="#createChapter" text="Новая глава" />
                </items>
             </Menu>
-          <Menu mnemonicParsing="false" text="Режим">
-            <items>
-              <MenuItem fx:id="autorModeMenuItem" mnemonicParsing="false" text="Авторство" />
-                  <MenuItem fx:id="translatorModeMenuItem" mnemonicParsing="false" text="Перевод" />
-            </items>
-          </Menu>
+            <Menu mnemonicParsing="false" text="Арка">
+               <items>
+                  <MenuItem fx:id="createArchMenuItem" mnemonicParsing="false" onAction="#createArch" text="Новая арка" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
       <Pane layoutX="862.0" layoutY="24.0" prefHeight="575.0" prefWidth="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">

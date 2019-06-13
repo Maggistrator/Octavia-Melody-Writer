@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane fx:id="rootPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="CENTER" layoutX="166.0" prefHeight="400.0" prefWidth="268.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="166.0" AnchorPane.rightAnchor="166.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="projectNameLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="82.0" prefWidth="276.0" text="Name" textFill="#4a4949c4" wrapText="true">
+               <font>
+                  <Font name="Century Gothic" size="28.0" />
+               </font>
+            </Label>
+            <Label prefHeight="30.0" prefWidth="201.0" text="Создание новой арки" textFill="#454444d8">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label prefHeight="53.0" prefWidth="323.0" />
+            <Label prefHeight="20.0" prefWidth="332.0" text="Имя:" textFill="#525252e7">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="nameField" prefHeight="25.0" prefWidth="286.0" />
+            <Label prefHeight="8.0" prefWidth="325.0" />
+            <Button fx:id="acceptButton" mnemonicParsing="false" onAction="#apply" prefHeight="25.0" prefWidth="103.0" text="Принять" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

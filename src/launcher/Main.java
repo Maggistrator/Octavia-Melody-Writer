@@ -27,7 +27,6 @@ public class Main extends Application {
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Octavia Melody Writer");
-            primaryStage.setOnCloseRequest((e)->{System.exit(0);});
             primaryStage.show();
             setLoolAndFeelDecorated();
         } catch (IOException e) {
