@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +32,6 @@ import org.xml.sax.SAXException;
  * @author Сова
  */
 public class Project implements ProjectNode{
-
     public enum ProjectType {
         Autorship, Translation;
     }
@@ -70,17 +70,16 @@ public class Project implements ProjectNode{
     /**
      * Позволяет сохранить проект, если он существует, или создать, если нет
      * @throws java.io.IOException на случай файловых ошибок - например - недостатка прав на запись
-     * @throws javax.xml.transform.TransformerException ошибка записи в xml
      */
-    public void save() throws IOException, TransformerException {
+    @Override
+    public void save() throws IOException {
         //-------------Создание проекта, если он еще не существует----------//
-        if (!source.exists()) {
+        
+        File projectProperties = new File(source.getAbsolutePath() + "/project.xml");
+        if (!projectProperties.exists()) {
             try {
                 //создаем новую папку для этого проекта
-                source.mkdir();
-                
-                //project.xml
-                File projectProperties = new File(source.getAbsolutePath() + "/project.xml");
+                if(!source.exists()) source.mkdir();
                 projectProperties.createNewFile();
                 
                 //Записываем в него начальные параметры
@@ -123,14 +122,21 @@ public class Project implements ProjectNode{
                 transformer.transform(domSource, streamResult);
                 
                 //обрабатываем рабочую директорию проекта
-                Arch rootArch = new Arch(source);
-                this.root = rootArch;//добавляем место для файлов без главы или тома
-            } catch (ParserConfigurationException ex) {
+                if(this.root == null){
+                    Arch rootArch = new Arch(source, this);
+                    this.root = rootArch;//добавляем место для файлов без главы или тома
+                }
+            } catch (ParserConfigurationException | TransformerException ex) {
                 Logger.getLogger(Project.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         //------------Сохранение, если проект существует-----------------//
-        else{
+        else {
+            //Проходимся и сохраняем все арки, а они, в свою очередь, сохраняют все папки
+            for(Arch arch : content) arch.save();
+            //Пересоздаём служебный файл данных
+            projectProperties.delete();
+            save();
         }
     }
     
@@ -169,13 +175,13 @@ public class Project implements ProjectNode{
                 project.type = type.equals("Autorship") ? ProjectType.Autorship : ProjectType.Translation;
                 
                 //обрабатываем рабочую директорию проекта
-                Arch rootArch = new Arch(projectConfig.getParentFile());
+                Arch rootArch = new Arch(projectConfig.getParentFile(), project);
                 project.root = rootArch;//добавляем место для файлов без главы или тома
                 Stack<Arch> arches = new Stack<>();//создаём стэк арок
                 arches.push(rootArch);
                 //проходимся по файловой системе проекта
                 Files.walk(Paths.get(path)).forEach((arg)->{
-                    walkThrowProjectFiles(arg, arches, rootArch);
+                    walkThrowProjectFiles(arg, arches, project);
                 });
                 arches.remove(rootArch);
                 //перепиливаем стэк в список
@@ -190,15 +196,15 @@ public class Project implements ProjectNode{
         }
     }
 
-    private static void walkThrowProjectFiles(Path path, Stack<Arch> arches, Arch rootArch) {
+    private static void walkThrowProjectFiles(Path path, Stack<Arch> arches, Project project) {
         //каст б-г мерзкого Path к православному File
         File file = path.toFile();
         
         //если натыкаемся на папку - делаем её Аркой(Томом)
         if (file.isDirectory()) {
             //избавляемся от рута 
-            if(!file.toURI().equals(rootArch.source.toURI()))
-                arches.push(new Arch(file));
+            if(!file.toURI().equals(project.source.toURI()))
+                arches.push(new Arch(file, project));
         }
         //натыкаемся на файл - проверяем, кто является его большим папочкой
         else {
@@ -207,29 +213,52 @@ public class Project implements ProjectNode{
             Arch lastArch = arches.pop();
             //если родительской папкой файла de-facto является папка последней арки, то добавляем его в неё
             if (parentDirectory.getAbsolutePath().equals(lastArch.source.getAbsolutePath())) {
-                lastArch.addChapter(new Chapter(file));
+                lastArch.addChapter(new Chapter(file, lastArch));
                 arches.push(lastArch);
             } else//в противном случае....
                 //....рекурсивный вызов той же функции, но уже с предыдущим элементом стэка
-                walkThrowProjectFiles(path, arches, rootArch);
+                walkThrowProjectFiles(path, arches, project);
                 //ограничения на рекурсию не требуются, так как в выборку никогда не попадёт файл за пределами папки проекта
         }
     }
 
     public Chapter createChapter(String name, Arch parent) throws IOException{
         File chapterSource = new File(parent.source.getAbsolutePath()+"/"+name+".tavi");
-        Chapter chapter = new Chapter(chapterSource);
+        Chapter chapter = new Chapter(chapterSource, parent);
         chapter.save();
         return chapter;
     }
     
+    public Arch createArch(String name) throws IOException{
+        File archSource = new File(source.getAbsolutePath()+"/"+name);
+        Arch arch = new Arch(archSource, this);
+        
+        content.add(arch);
+        arch.save();
+        return arch;
+    }
+    
     /**
      * Удаляет текущий проект из файловой системы
+     * @throws java.io.IOException ошибка удаления
      */
-    public void delete(){
-        
+    @Override
+    public void delete() throws IOException{
+        Files.walk(Paths.get(source.toURI()))
+            .sorted(Comparator.reverseOrder())
+            .map(Path::toFile)
+            .forEach(File::delete);
     }
         
+    @Override
+    public void rename(String newName) throws IOException {
+        this.name = newName;
+        File oldFile = source;
+        File newFile = new File(source.getParent()+"/"+name);
+        
+        if(!oldFile.renameTo(newFile)) throw new IOException("Rename failed!");
+    }
+    
     @Override
     public File getSource() {
         return source;
@@ -238,6 +267,11 @@ public class Project implements ProjectNode{
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public ProjectNode getParent() {
+        return null;
     }
     
 }

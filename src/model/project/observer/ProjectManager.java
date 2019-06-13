@@ -6,12 +6,13 @@ import javax.xml.transform.TransformerException;
 import model.project.Arch;
 import model.project.Chapter;
 import model.project.Project;
+import model.project.ProjectNode;
 import model.project.exceptions.ProjectLoadException;
 import model.project.observer.events.ProjectNodeEditedEvent;
-import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 import model.project.observer.events.ProjectLoadedEvent;
 import model.project.observer.events.ProjectNodeCreatedEvent;
+import model.project.observer.events.ProjectNodeDeletedEvent;
 
 /**
  * ProjectManager следит за событиями проекта, и уведомляет о его изменениях заинтересованных слушателей
@@ -43,8 +44,9 @@ public class ProjectManager implements ObservableProject {
         return instance;
     }
     
-    public void saveProject(){
+    public void saveProject() throws IOException{
         //если проект не null, то сохранить его, и уведомить слушателей 
+        project.save();
     }
     
     public void loadProject(String path) throws ProjectLoadException{
@@ -59,11 +61,7 @@ public class ProjectManager implements ObservableProject {
     public void createProject(Project project) throws IOException, TransformerException{
         this.project = project;
         project.save();
-        notify(new ProjectCreatedEvent(project));
-    }
-    
-    public void deleteProject(){
-        //удалить проект, живущий в этом ProjectManager'e, и уведомить слушателей
+        notify(new ProjectNodeCreatedEvent(project, null));
     }
     
     @Override
@@ -113,22 +111,19 @@ public class ProjectManager implements ObservableProject {
      * Этот метод создаёт новую главу
      * @param name имя главы
      * @param parent арка, в которой она находится
+     * @return объект созданной главы
      * @throws java.io.IOException ошибка записи
      */
-    public void createChapter(String name, Arch parent) throws IOException{
+    public Chapter createChapter(String name, Arch parent) throws IOException{
         Chapter newChapter = project.createChapter(name, parent);
         notify(new ProjectNodeCreatedEvent(newChapter, parent));
+        return newChapter;
     }
     
-    /** 
-     * Метод редактирования главы. 
-     * Его задача, уведомить слушателей о том, что глава получила статус редактируемой, а не внести в неё изменения
-     * @param chapter глава, которая стала редактируемой
-     */
-    public void editChapter(Chapter chapter) {
-        chapter.edited = true;
-        editedChapters.add(chapter);
-        notify(new ProjectNodeEditedEvent(chapter));
+    public Arch createArch(String name) throws IOException {
+        Arch newArch = project.createArch(name);
+        notify(new ProjectNodeCreatedEvent(newArch, project));
+        return newArch;
     }
     
     /**
@@ -143,6 +138,17 @@ public class ProjectManager implements ObservableProject {
         editedChapters.remove(chapter);
     }
 
+    public void deleteNode(ProjectNode node) throws IOException{
+        node.delete();
+        if(node instanceof Project) this.project = null;
+        notify(new ProjectNodeDeletedEvent(node));
+    }
+    
+    public void renameNode(ProjectNode node, String name) throws IOException{
+        node.rename(name);
+        notify(new ProjectNodeEditedEvent(node));
+    }
+    
     public ArrayList<Chapter> getEditedChapters() {
         return editedChapters;
     }

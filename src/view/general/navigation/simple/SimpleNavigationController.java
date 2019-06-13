@@ -3,43 +3,48 @@ package view.general.navigation.simple;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ResourceBundle;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javax.swing.JOptionPane;
 import model.project.Arch;
 import model.project.Chapter;
+import model.project.Project;
 import model.project.observer.ProjectListener;
 import model.project.observer.ProjectManager;
-import model.project.observer.events.ProjectCreatedEvent;
 import model.project.observer.events.ProjectEvent;
 import model.project.observer.events.ProjectLoadedEvent;
 import model.project.ProjectNode;
 import model.project.observer.events.ProjectNodeCreatedEvent;
+import model.project.observer.events.ProjectNodeDeletedEvent;
 import model.project.observer.events.ProjectNodeEditedEvent;
+import view.functions.autorship.AutorshipModeController;
+import view.general.MainScreenController;
+import view.support.modal.controllers.CreateArchController;
+import view.support.modal.controllers.CreateChapterDialogController;
 
 public class SimpleNavigationController implements ProjectListener {
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
 
     @FXML
     private TreeView<ProjectNode> navigator;
@@ -47,58 +52,75 @@ public class SimpleNavigationController implements ProjectListener {
     @FXML
     private Label header;
 
-    @FXML
-    private TextArea hintArea;
-
-    @FXML
-    private Separator separator;
-
-    @FXML
-    private Label hideButton;
-
     ProjectManager manager = ProjectManager.getInstance();
-
+    TabPane contentPane;
+    ContextMenu navigatorMenu = new ContextMenu();
+    
     @FXML
     void initialize() {
+        //подписываемся на события модели
         manager.subscribe(this);
+        
+        //устанавливаем обработчик на события узла дерева
         navigator.setOnMouseClicked((MouseEvent mouseEvent) -> {
             if (mouseEvent.getClickCount() == 2) {
                 TreeItem<ProjectNode> item = navigator.getSelectionModel().getSelectedItem();
                 if (item != null) {
                     if (item.getValue() instanceof Chapter) {
                         if ((Chapter) item.getValue() != null) {
-                            manager.editChapter((Chapter) item.getValue());
+                            editChapter((Chapter) item.getValue());
                         }
                     }
                 }
             }
         });
+        
+        //Устанавливаем слушатель контекстного меню, отвечающий за корректный выбор опций меню
+        navigator.setOnContextMenuRequested((ContextMenuEvent event) -> {
+            //передаём первый выбранный элемент
+            TreeItem<ProjectNode> selected = navigator.getSelectionModel().getSelectedItems().get(0);
+            buildContextMenu(selected, navigatorMenu);
+        });
+        
+        //устанавливаем выпадающее меню на дерево
+        navigator.setContextMenu(navigatorMenu);
     }
 
     @Override
     public void dispatch(ProjectEvent e) {
         try {
-            //если проект создан..
-            if (e instanceof ProjectCreatedEvent) {
-                ProjectCreatedEvent event = (ProjectCreatedEvent) e;
-                dispatchProjectCreationEvent(event);
-            }
-
             //если проект загружен..
             if (e instanceof ProjectLoadedEvent) {
                 ProjectLoadedEvent event = (ProjectLoadedEvent) e;
                 dispatchProjectLoadEvent(event);
             }
-            if(e instanceof ProjectNodeCreatedEvent){
-                dispatchNodeCreation((ProjectNodeCreatedEvent) e);
+            //если создан нод..
+            if (e instanceof ProjectNodeCreatedEvent) {
+                ProjectNodeCreatedEvent event = (ProjectNodeCreatedEvent) e;
+                //проверяем, является ли он проектом
+                if(event.newNode instanceof Project){
+                    //если да - дипатчим
+                    dispatchProjectCreationEvent(event);
+                    //если нет - диспатчим(по-другому) TODO: смержить диспатчи!!!
+                } else dispatchNodeCreation(event.parent, event.newNode);
+            } 
+            if(e instanceof ProjectNodeEditedEvent){
+                ProjectNodeEditedEvent event = (ProjectNodeEditedEvent) e;
+                dispatchNodeDeletion(event.node);
+                dispatchNodeCreation(event.node.getParent(), event.node);
+            }
+            if(e instanceof ProjectNodeDeletedEvent){
+                dispatchNodeDeletion(((ProjectNodeDeletedEvent) e).node);
             }
             
         } catch (MalformedURLException ex) {
             JOptionPane.showMessageDialog(null, "Ресурсы программы повреждены, попробуйте переустановить её!");
+        } catch (IOException ex) {
+            Logger.getLogger(SimpleNavigationController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void dispatchProjectLoadEvent(ProjectLoadedEvent event) throws MalformedURLException{
+
+    private void dispatchProjectLoadEvent(ProjectLoadedEvent event) throws MalformedURLException {
         header.setText(event.project.name);
 
         //обновляем рут
@@ -126,11 +148,11 @@ public class SimpleNavigationController implements ProjectListener {
         }
     }
 
-    private void dispatchProjectCreationEvent(ProjectCreatedEvent event) throws MalformedURLException{
+    private void dispatchProjectCreationEvent(ProjectNodeCreatedEvent event) throws MalformedURLException {
         //обновляем рут и шапку проекта
         TreeItem<ProjectNode> root = new TreeItem(manager.getProject());
         navigator.setRoot(root);
-        header.setText(event.project.name);
+        header.setText(((Project)event.newNode).name);
 
         //украшаем рут красивой иконкой
         File rootIconFile = new File("res/project icon.png");
@@ -140,21 +162,72 @@ public class SimpleNavigationController implements ProjectListener {
         root.setGraphic(rootIcon);
     }
 
-    private void dispatchNodeCreation(ProjectNodeCreatedEvent event) {
+    private void dispatchNodeCreation(ProjectNode parent, ProjectNode newNode) {
         //пробуем прикрутить новый нод к руту
-        appendItemByParent(navigator.getRoot(), event.parent, event.newNode);
+        appendItemByParent(navigator.getRoot(), parent, newNode);
         //прикручиваем ко всему остальному, на авось
         navigator.getRoot().getChildren().forEach((item) -> {
-            appendItemByParent(item, event.parent, event.newNode);
+            appendItemByParent(item, parent, newNode);
         });
+    }
+
+    private void dispatchNodeDeletion(ProjectNode node) throws IOException {
+            
+        //если у нода есть родительский нод, значит это не проект
+        if (node.getParent() != null) {
+            File neededPath = node.getSource();
+            File parentPath = node.getParent().getSource();
+            File rootPath = navigator.getRoot().getValue().getSource();
+            
+            //готовимся узнать родительский нод, и искомый
+            TreeItem<ProjectNode> parentNode = null;
+            TreeItem<ProjectNode> nodeToDelete = null;
+            
+            //если родительский нод является корнем..
+            if (rootPath.getAbsolutePath().equals(parentPath.getAbsolutePath())) {
+                //..проходимся по руту и ищем там
+                for (TreeItem<ProjectNode> rootChild : navigator.getRoot().getChildren()) {
+                    File currentPath = rootChild.getValue().getSource();
+                    if (neededPath.getAbsolutePath().equals(currentPath.getAbsolutePath())) {
+                        parentNode = navigator.getRoot();
+                        nodeToDelete = rootChild;
+                    }
+                }
+            //в противном случае...
+            } else {
+                //сначала ищем законного владельца..
+                for (TreeItem<ProjectNode> rootChild : navigator.getRoot().getChildren()) {
+                    File archPath = rootChild.getValue().getSource();
+                    if (archPath.getAbsolutePath().equals(parentPath.getAbsolutePath())) {
+                        parentNode = rootChild;
+                        System.out.println("parent:"+parentNode);
+                        //..и только потом искомого
+                        for (TreeItem<ProjectNode> leaf : parentNode.getChildren()) {
+                            File leafPath = leaf.getValue().getSource();
+                        System.out.println("leafPath:"+leaf);
+                        System.out.println("leafPath.getAbsolutePath().equals(neededPath.getAbsolutePath()):"+(leafPath.getAbsolutePath().equals(neededPath.getAbsolutePath())));
+                            if (leafPath.getAbsolutePath().equals(neededPath.getAbsolutePath())) {
+                                nodeToDelete = leaf;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            parentNode.getChildren().remove(nodeToDelete);
+        } else {
+            navigator.setRoot(null);
+            header.setText("Name");
+            contentPane.getTabs().clear();
+        }
     }
 
     private void appendItemByParent(TreeItem<ProjectNode> item, ProjectNode parent, ProjectNode toInsert) {
         try {
-            Path neededPath = Paths.get(parent.getSource().toURI());
-            Path currentPath = Paths.get(item.getValue().getSource().toURI());
-            
-            if (Files.isSameFile(currentPath, neededPath)) {
+            File neededPath = parent.getSource();
+            File currentPath = item.getValue().getSource();
+
+            if (neededPath.getAbsolutePath().equals(currentPath.getAbsolutePath())) {
                 if (toInsert instanceof Chapter) {
                     TreeItem chapterNode = wrapChapterNode((Chapter) toInsert);
                     item.getChildren().add(chapterNode);
@@ -169,7 +242,7 @@ public class SimpleNavigationController implements ProjectListener {
             Logger.getLogger(SimpleNavigationController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void expandTreeView(TreeItem<ProjectNode> selectedItem) {
         if (selectedItem != null) {
             expandTreeView(selectedItem.getParent());
@@ -179,7 +252,7 @@ public class SimpleNavigationController implements ProjectListener {
             }
         }
     }
-    
+
     private TreeItem wrapChapterNode(Chapter chapter) throws MalformedURLException {
         TreeItem<ProjectNode> chapterNode = new TreeItem<>(chapter);
         //устанавливаем красивую иконку главе
@@ -204,7 +277,7 @@ public class SimpleNavigationController implements ProjectListener {
         });
         return archNode;
     }
-    
+
     private TreeItem wrapArchNode(Arch arch) throws MalformedURLException {
         TreeItem<ProjectNode> archNode = new TreeItem<>(arch);
         archNode.expandedProperty().addListener(new ChangeListener<Boolean>() {
@@ -216,6 +289,7 @@ public class SimpleNavigationController implements ProjectListener {
                     archIcon.setFitHeight(24);
                     archIcon.setFitWidth(24);
                     archNode.setGraphic(archIcon);
+                    
                 } catch (MalformedURLException ex) {
                     Logger.getLogger(SimpleNavigationController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -229,5 +303,140 @@ public class SimpleNavigationController implements ProjectListener {
         archIcon.setFitWidth(24);
         archNode.setGraphic(archIcon);
         return archNode;
+    }
+
+    private MenuItem createArch, createChapter, delete, rename;
+    
+    private void buildContextMenu(TreeItem<ProjectNode> target, ContextMenu menu) {
+        menu.getItems().clear();
+        
+        createChapter = new MenuItem("Создать главу");
+        createArch = new MenuItem("Создать арку");
+        rename = new MenuItem("Переименовать");
+        delete = new MenuItem("Удалить");
+        
+        createArch.setOnAction(this::createArch);
+        createChapter.setOnAction((e)->{
+            System.out.println("target:"+target);
+            System.out.println("target.getValue() instanceof Project:"+(target.getValue() instanceof Project));
+            System.out.println("target.getValue() instanceof Arch:"+(target.getValue() instanceof Arch));
+            Arch initialArch = null;
+            if(target.getValue() instanceof Project) initialArch = ((Project)target.getValue()).root;
+            if(target.getValue() instanceof Arch) initialArch = (Arch)target.getValue();
+            createChapter(initialArch);
+        });
+        
+        rename.setOnAction((e)->{
+            try {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setContentText("Выберите новое имя:");
+                Optional<String> showAndWait = dialog.showAndWait();
+                if(showAndWait.isPresent()) manager.renameNode(target.getValue(), showAndWait.get());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Переименование не удалось..");
+            }
+        });
+        
+        delete.setOnAction((e)-> {
+            try {
+                manager.deleteNode(target.getValue());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Удаление не удалось..");
+            }
+        });
+        
+        if(target != null){
+            if(target.equals(navigator.getRoot())) 
+                menu.getItems().addAll(createArch, createChapter, delete);
+            if(target.getValue() instanceof Arch)
+                menu.getItems().addAll(createChapter, delete);
+            if(target.getValue() instanceof Chapter)
+                menu.getItems().addAll(delete);
+        }
+    }
+    
+        private void createArch(Event e) {
+        try {
+            if(manager.getProject() != null){
+                //загружаем диалог создания главы
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../support/modal/fxml/create_arch.fxml"));
+                CreateArchController controller = new CreateArchController();
+                controller.setParent(contentPane);
+                loader.setController(controller);
+                Parent root = loader.load();
+
+                // создаём  новую вкладку и добавляем её на панель
+                Tab newArchCreation = new Tab("Создать арку", root);
+                contentPane.getTabs().add(newArchCreation);
+
+                //выбираем новенькую вкладку как текущую
+                SingleSelectionModel<Tab> selectionModel = contentPane.getSelectionModel();
+                selectionModel.select(newArchCreation);
+            } else {
+                JOptionPane.showMessageDialog(null, "Создайте или загрузите проект!");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    private void createChapter(Arch initialArch){
+        try {
+            if(manager.getProject() != null){
+                //загружаем диалог создания главы
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../support/modal/fxml/create_chapter.fxml"));
+                CreateChapterDialogController controller = new CreateChapterDialogController();
+                controller.setParent(contentPane);
+                if(initialArch != null) controller.setInitialArch(initialArch);
+                loader.setController(controller);
+                Parent root = loader.load();
+
+                // создаём  новую вкладку и добавляем её на панель
+                Tab newChapterCreation = new Tab("Создать главу", root);
+                contentPane.getTabs().add(newChapterCreation);
+
+                //выбираем новенькую вкладку как текущую
+                SingleSelectionModel<Tab> selectionModel = contentPane.getSelectionModel();
+                selectionModel.select(newChapterCreation); 
+            } else {
+                JOptionPane.showMessageDialog(null, "Создайте или загрузите проект!");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+        private void editChapter(Chapter chapter) {
+        try {
+            //загружаем главу в текстовую область
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../../functions/autorship/autor_mode.fxml"));
+            AutorshipModeController controller = new AutorshipModeController();
+            loader.setController(controller);
+            Parent autorshipPanel = loader.load();
+            controller.initWithChapter(chapter);
+            //создаём новую вкладку
+            Tab tab = new Tab(chapter.getName(), autorshipPanel);
+
+            //выбираем новенькую вкладку как текущую
+            SingleSelectionModel<Tab> selectionModel = contentPane.getSelectionModel();
+            selectionModel.select(tab);
+
+            //добавляем слушатель закрытия вкладки
+            tab.setOnClosed((Event event) -> {
+                try {
+                    int answer = JOptionPane.showConfirmDialog(null, "Сохранить изменения?");
+                    if (answer == JOptionPane.OK_OPTION) manager.canselEditingChapter(chapter, true);
+                    else manager.canselEditingChapter(chapter, false);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Ошибка записи!");
+                }
+            });
+            this.contentPane.getTabs().add(tab);
+        } catch (IOException ex) {
+            Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void setContentPane(TabPane contentPane){
+        this.contentPane = contentPane;
     }
 }
