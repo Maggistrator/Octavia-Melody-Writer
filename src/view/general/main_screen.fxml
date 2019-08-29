@@ -27,14 +27,14 @@
                   <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Выйти" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Глава">
-               <items>
-                  <MenuItem fx:id="createChapterMenuItem" mnemonicParsing="false" onAction="#createChapter" text="Новая глава" />
-               </items>
-            </Menu>
             <Menu mnemonicParsing="false" text="Арка">
                <items>
                   <MenuItem fx:id="createArchMenuItem" mnemonicParsing="false" onAction="#createArch" text="Новая арка" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Глава">
+               <items>
+                  <MenuItem fx:id="createChapterMenuItem" mnemonicParsing="false" onAction="#createChapter" text="Новая глава" />
                </items>
             </Menu>
         </menus>

@@ -31,7 +31,7 @@ public class AutorshipModeController {
     
     @FXML
     void initialize() {
-        //паользовательская кнопка HTMLEditor'a - сохранение
+        //пользовательская кнопка HTMLEditor'a - сохранение
         Node node = textEditor.lookup(".top-toolbar");
         if (node instanceof ToolBar) {
             try {
