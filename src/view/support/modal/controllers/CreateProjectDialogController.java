@@ -86,8 +86,6 @@ public class CreateProjectDialogController {
                Logger.getLogger(CreateProjectDialogController.class.getName()).log(Level.SEVERE, null, ex);
                //TODO: заменить на запись в служебный журнал ошибок в папке service
                JOptionPane.showMessageDialog(null, "Ошибка создания служебного файла! Сообщение: "+ex.getMessage());
-           } catch (TransformerException ex) {
-               Logger.getLogger(CreateProjectDialogController.class.getName()).log(Level.SEVERE, null, ex);
            }
        }
     }

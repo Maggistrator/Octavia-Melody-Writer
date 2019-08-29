@@ -28,8 +28,6 @@ import org.xml.sax.SAXException;
  * Класс произведения.
  * <br>Представляет собой обобщённую структуру - главы, файловая и службная 
  * информация, относящаяся к проекту
- * 
- * @author Сова
  */
 public class Project implements ProjectNode{
     public enum ProjectType {
@@ -113,12 +111,6 @@ public class Project implements ProjectNode{
                 StreamResult streamResult = new StreamResult(projectProperties);        
                 transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                
-                // If you use
-                // StreamResult result = new StreamResult(System.out);
-                // the output will be pushed to the standard output ...
-                // You can use that for debugging
-
                 transformer.transform(domSource, streamResult);
                 
                 //обрабатываем рабочую директорию проекта
@@ -184,7 +176,7 @@ public class Project implements ProjectNode{
                     walkThrowProjectFiles(arg, arches, project);
                 });
                 arches.remove(rootArch);
-                //перепиливаем стэк в список
+                //конвертируем стэк в список
                 project.content.addAll(arches);
                 return project;
             } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -196,17 +188,17 @@ public class Project implements ProjectNode{
         }
     }
 
+    //Рекурсивная функция обхода всех вложенных директорий и файлов проекта
     private static void walkThrowProjectFiles(Path path, Stack<Arch> arches, Project project) {
-        //каст б-г мерзкого Path к православному File
         File file = path.toFile();
         
-        //если натыкаемся на папку - делаем её Аркой(Томом)
+        //если найдена директория - делаем её Аркой(Томом)
         if (file.isDirectory()) {
-            //избавляемся от рута 
+            //избавляемся от корня 
             if(!file.toURI().equals(project.source.toURI()))
                 arches.push(new Arch(file, project));
         }
-        //натыкаемся на файл - проверяем, кто является его большим папочкой
+        //если найден файл - ищем его родительскую арку
         else {
             if(file.getName().equals("project.xml")) return;
             File parentDirectory = file.getParentFile();
@@ -222,6 +214,13 @@ public class Project implements ProjectNode{
         }
     }
 
+    /**
+     * Функция создания новой главы
+     * @param name имя главы
+     * @param parent родительская арка
+     * @return созданный объект главы
+     * @throws IOException ошибка создания файла для новой главы
+     */
     public Chapter createChapter(String name, Arch parent) throws IOException{
         File chapterSource = new File(parent.source.getAbsolutePath()+"/"+name+".tavi");
         Chapter chapter = new Chapter(chapterSource, parent);
@@ -229,10 +228,15 @@ public class Project implements ProjectNode{
         return chapter;
     }
     
+    /**
+     * Функция создания новой арки
+     * @param name имя арки
+     * @return созданный объект арки
+     * @throws IOException ошибка записи изменений на диск 
+     */
     public Arch createArch(String name) throws IOException{
         File archSource = new File(source.getAbsolutePath()+"/"+name);
         Arch arch = new Arch(archSource, this);
-        
         content.add(arch);
         arch.save();
         return arch;
@@ -244,6 +248,7 @@ public class Project implements ProjectNode{
      */
     @Override
     public void delete() throws IOException{
+        //использование Stream API значительно упрощает данную операцию
         Files.walk(Paths.get(source.toURI()))
             .sorted(Comparator.reverseOrder())
             .map(Path::toFile)
@@ -259,16 +264,24 @@ public class Project implements ProjectNode{
         if(!oldFile.renameTo(newFile)) throw new IOException("Rename failed!");
     }
     
+    /**
+     * @return директория, представляющая проект в файловой системе
+     */
     @Override
     public File getSource() {
         return source;
     }
 
     @Override
+    //необходимое переопределение метода Object.toString() для корректного отображения в объектах представления
     public String toString() {
         return name;
     }
 
+    /**
+     * Переопределение одного из ключевых методов ProjectNode, для корректного поведения конкретной реализации
+     * @return всегда null, так как только проект не имеет предков
+     */
     @Override
     public ProjectNode getParent() {
         return null;
